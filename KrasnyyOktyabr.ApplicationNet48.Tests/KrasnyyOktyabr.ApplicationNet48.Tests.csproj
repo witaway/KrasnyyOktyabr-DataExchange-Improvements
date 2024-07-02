@@ -157,7 +157,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Logging\KafkaLoggingHelperTests.cs" />
+    <Compile Include="Logging\MessageHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\JsonServiceTests.cs" />
     <Compile Include="Services\Kafka\KafkaServiceTests.cs" />

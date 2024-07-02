@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Text;
 using Microsoft.Extensions.Logging;
+using static KrasnyyOktyabr.ApplicationNet48.Logging.MessageHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Logging;
 
@@ -240,31 +240,5 @@ public static class KafkaLoggingHelper
     public static void LogAlreadyDisposed(this ILogger logger, string key)
     {
         logger.LogError("Already disposed '{Key}'", key);
-    }
-
-    public static string ShortenMessage(string message, int lengthLimit)
-    {
-        if (message.Length <= lengthLimit)
-        {
-            return message;
-        }
-
-        string startEndSeparator = " ... ";
-
-        if (message.Length <= startEndSeparator.Length)
-        {
-            return message;
-        }
-
-        StringBuilder stringBuilder = new();
-
-        int leftOffset = (lengthLimit - startEndSeparator.Length) / 2;
-        int rightOffset = message.Length - (lengthLimit - (leftOffset + startEndSeparator.Length));
-
-        stringBuilder.Append(message.Substring(0, leftOffset));
-        stringBuilder.Append(startEndSeparator);
-        stringBuilder.Append(message.Substring(rightOffset));
-
-        return stringBuilder.ToString();
     }
 }

@@ -3,14 +3,14 @@
 namespace KrasnyyOktyabr.ApplicationNet48.Logging.Tests;
 
 [TestClass]
-public class KafkaLoggingHelperTests
+public class MessageHelperTests
 {
     [TestMethod]
     public void ShortenMessage_WhenMessageShorterThanLimit_ShoudldReturnMessage()
     {
         string message = "TestMessage";
 
-        Assert.AreEqual(message, KafkaLoggingHelper.ShortenMessage(message, message.Length + 1));
+        Assert.AreEqual(message, MessageHelper.ShortenMessage(message, message.Length + 1));
     }
 
     [TestMethod]
@@ -20,7 +20,7 @@ public class KafkaLoggingHelperTests
 
         string expected = "Te ... age";
 
-        string actual = KafkaLoggingHelper.ShortenMessage(message, message.Length - 1);
+        string actual = MessageHelper.ShortenMessage(message, message.Length - 1);
 
         Assert.AreEqual(expected, actual);
     }
