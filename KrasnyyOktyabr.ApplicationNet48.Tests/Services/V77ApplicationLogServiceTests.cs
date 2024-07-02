@@ -32,9 +32,9 @@ public class V77ApplicationLogServiceTests
     {
         TransactionFilterWithCommit filter = new(
             objectIds: ["O/666/", "O/999/"],
-            transactionTypes: ["DocWrite"],
-            committedLine: "20230301;09:49:24;Пользователь_6;E;Docs;DocBackPassed;2;;O/666/444007;Документ3 96569 01.03.2023 09:49:22",
-            startPosition: 100
+            transactionTypes: ["DocBackPassed"],
+            committedLine: "20230301;09:49:24;Пользователь_6;E;Docs;DocWrite;2;;O/666/444007;Документ3 96569 01.03.2023 09:49:22",
+            startPosition: 2271
         );
 
         GetLogTransactionsResult result = await s_logService.GetLogTransactionsAsync(
@@ -42,7 +42,7 @@ public class V77ApplicationLogServiceTests
             filter,
             cancellationToken: default);
 
-        Assert.AreEqual(4, result.Transactions.Count);
+        Assert.AreEqual(2, result.Transactions.Count);
         Assert.AreEqual(new FileInfo(LogFilePath).Length, result.LastReadOffset.Position);
         Assert.AreEqual("20230301;09:49:31;Пользователь_8;E;Docs;DocWrite;2;;O/80/222234;Документ2 135262 16.11.2021 23:59:59", result.LastReadOffset.LastReadLine);
     }

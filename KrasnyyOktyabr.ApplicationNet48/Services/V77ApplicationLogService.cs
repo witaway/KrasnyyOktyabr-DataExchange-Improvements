@@ -20,6 +20,8 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
 
     private static char LogTransactionValueSeparator => ';';
 
+    private static Encoding ReaderEncoding => Encoding.GetEncoding(1251);
+
     public static string LogFileRelativePath => @"SYSLOG\1cv7.mlg";
 
     public static Regex ObjectDateRegex = new(@"\s+(\d{2}\.\d{2}\.\d{4})\s?");
@@ -29,7 +31,7 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
         List<LogTransaction> logTransactions = [];
 
         using FileStream fileStream = File.Open(logFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-        using StreamReader reader = new(fileStream, Encoding.GetEncoding(1251));
+        using StreamReader reader = new(fileStream, ReaderEncoding);
 
         fileStream.Position = CalculateStartPosition(fileStream.Length, filter.StartPosition);
 
@@ -44,7 +46,7 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
         while (!reader.EndOfStream)
         {
             endLine = await reader.ReadLineAsync().ConfigureAwait(false) ?? string.Empty;
-            endPosition = fileStream.Position;
+            endPosition += ReaderEncoding.GetByteCount(endLine) + Environment.NewLine.Length;
             lineReadCount++;
 
             if (lineReadCount == 2)
@@ -57,7 +59,9 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
                 logTransactions.Add(logTransaction!.Value);
             }
 
-            if (endLine == filter.CommittedLine && !wasCommittedLineFound)
+            if (endLine == filter.CommittedLine
+                && endPosition >= filter.StartPosition
+                && !wasCommittedLineFound)
             {
                 logger.LogTrace("Committed line found '{CommittedLine}' ({TransactionsCleared} found transactions cleared)", filter.CommittedLine, logTransactions.Count);
 
@@ -66,6 +70,8 @@ public sealed class V77ApplicationLogService(ILogger<V77ApplicationLogService> l
                 logTransactions.Clear();
             }
         }
+
+        endPosition = fileStream.Position; // To prevent inaccuracy in commit offset
 
         logger.LogTrace("{LinesReadCount} lines read, last line: '{EndLine}' ({TransactionsCount} transactions found)", lineReadCount, endLine, logTransactions.Count);
 
