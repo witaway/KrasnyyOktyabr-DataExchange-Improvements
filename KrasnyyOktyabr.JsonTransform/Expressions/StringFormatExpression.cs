@@ -1,4 +1,6 @@
-﻿namespace KrasnyyOktyabr.JsonTransform.Expressions;
+﻿using KrasnyyOktyabr.JsonTransform.Numerics;
+
+namespace KrasnyyOktyabr.JsonTransform.Expressions;
 
 /// <summary>
 /// Runs <see cref="string.Format(string, object?[])"/>.
@@ -40,6 +42,13 @@ public sealed class StringFormatExpression : AbstractExpression<Task<string>>
 
                 args[i] = await _argsExpression[i].InterpretAsync(context, cancellationToken).ConfigureAwait(false);
             }
+
+            // Extract actual numeric values if argument is Number
+            args = args
+                .Select(arg => arg is Number number
+                    ? number.Long ?? number.Decimal
+                    : arg)
+                .ToArray();
 
             return string.Format(format, args);
         }
