@@ -265,8 +265,17 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
         return initializeTask.Result;
     }
 
-    /// <exception cref="OperationCanceledException"></exception>
+    public async Task<object?> RunErtAsync(string ertRelativePath, IReadOnlyDictionary<string, string>? ertContext, CancellationToken cancellationToken = default)
+    {
+        return await RunErtAsync(ertRelativePath, ertContext, default, cancellationToken);
+    }
+
     public async Task<object?> RunErtAsync(string ertRelativePath, IReadOnlyDictionary<string, string>? ertContext, string? resultName, CancellationToken cancellationToken = default)
+    {
+        return await RunErtAsync(ertRelativePath, ertContext, resultName, default, cancellationToken);
+    }
+
+    public async Task<object?> RunErtAsync(string ertRelativePath, IReadOnlyDictionary<string, string>? ertContext, string? resultName, string? errorMessageName, CancellationToken cancellationToken = default)
     {
         await _connectionLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
@@ -314,6 +323,24 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
                 args: ["Report", contextValueList, ertFullPath]);
 
             cancellationToken.ThrowIfCancellationRequested();
+
+            // Check if ERT wrote error message
+            if (errorMessageName is not null)
+            {
+                // ValueList.Get(Name)
+                object? errorMessage = InvokeMember(
+                    type: contextValueList.GetType(),
+                    memberName: "Get",
+                    attributes: BindingFlags.Public | BindingFlags.InvokeMethod,
+                    binder: null,
+                    target: contextValueList,
+                    args: [errorMessageName]);
+
+                if (errorMessage is not null)
+                {
+                    throw new FailedToRunErtException(errorMessage.ToString());
+                }
+            }
 
             // ValueList.Get(Name)
             object? result = InvokeMember(
@@ -556,14 +583,6 @@ public sealed class ComV77ApplicationConnection : IComV77ApplicationConnection
     {
         internal ErrorsCountExceededException()
             : base($"Errors count exceeded ({MaxErrorsCount})")
-        {
-        }
-    }
-
-    public class FailedToInvokeMemberException : Exception
-    {
-        internal FailedToInvokeMemberException(string memberName, object?[]? args, Exception innerException)
-            : base($"Failed to invoke member '{memberName}' with args: {BuildArgsString(args)}", innerException)
         {
         }
     }

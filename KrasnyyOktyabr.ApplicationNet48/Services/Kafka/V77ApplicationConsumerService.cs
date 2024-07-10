@@ -227,7 +227,8 @@ public sealed class V77ApplicationConsumerService(
                 object? error = await connection.RunErtAsync(
                     ertRelativePath: GetErtRelativePath(settings),
                     ertContext,
-                    resultName: "Error",
+                    resultName: default,
+                    errorMessageName: "Error",
                     cancellationToken).ConfigureAwait(false);
 
                 if (error is not null)

@@ -276,6 +276,7 @@ public sealed partial class V77ApplicationProducerService(
                     ertRelativePath: GetErtRelativePath(settings),
                     ertContext,
                     resultName: "ObjectJSON",
+                    errorMessageName: "Error",
                     cancellationToken).ConfigureAwait(false);
 
                 if (result is null || result.ToString() == "null")

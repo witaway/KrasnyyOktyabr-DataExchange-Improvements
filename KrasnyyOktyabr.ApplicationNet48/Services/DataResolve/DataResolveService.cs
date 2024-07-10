@@ -93,6 +93,7 @@ public class DataResolveService : IDataResolveService
 
         Dictionary<string, object?>? context = GetOptional<Dictionary<string, object?>?>(args, "formParams", null);
         string? resultName = GetOptional<string?>(args, "resultName", null);
+        string? errorMessageName = GetOptional<string?>(args, "errorMessageName", null);
 
         ConnectionProperties connectionProperties = new(
             infobasePath: infobasePath,
@@ -114,12 +115,18 @@ public class DataResolveService : IDataResolveService
             }
         }
 
-        return new(
-            connectionFactory,
-            connectionProperties,
-            ertRelativePath: Path.Combine(DefaultErtRelativePathWithoutName, ertName),
-            context: convertedContext,
-            resultName);
+        return errorMessageName is not null
+            ? new(connectionFactory,
+                connectionProperties,
+                ertRelativePath: Path.Combine(DefaultErtRelativePathWithoutName, ertName),
+                context: convertedContext,
+                resultName,
+                errorMessageName)
+            : new(connectionFactory,
+                connectionProperties,
+                ertRelativePath: Path.Combine(DefaultErtRelativePathWithoutName, ertName),
+                context: convertedContext,
+                resultName);
     }
 
     private static T GetRequired<T>(Dictionary<string, object?> args, string name)

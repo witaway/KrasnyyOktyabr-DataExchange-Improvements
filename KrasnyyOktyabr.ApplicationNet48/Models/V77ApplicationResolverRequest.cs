@@ -28,4 +28,7 @@ public class V77ApplicationResolverRequest
 #nullable enable
     [JsonProperty("formParams")]
     public Dictionary<string, string>? FormParams { get; set; }
+
+    [JsonProperty("errorMessageName")]
+    public string? ErrorMessageName { get; set; }
 }

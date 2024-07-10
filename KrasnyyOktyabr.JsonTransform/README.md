@@ -1109,6 +1109,7 @@ Available resolvers (i.e. `resolver` parameter values) with parameters for now:
   * `ertName` - `string` (name of the file located in `infobasePath` + `/EXTFORMS/EDO/Test`)
   * (_optional_) `formParams` - `map<string, object?>`
   * (_optional_) `resultName` - `string`
+  * (_optional_) `errorMessageName` - `string` (_"Error"_ by default)
 
 > In _ComV77ApplicationResolver_ `formParams` values are converted to strings before passing to ERT.
 

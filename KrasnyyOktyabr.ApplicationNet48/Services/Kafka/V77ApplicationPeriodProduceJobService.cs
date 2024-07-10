@@ -166,6 +166,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
                     ertRelativePath: GetErtRelativePath(request),
                     ertContext,
                     resultName: "ObjectJSON",
+                    errorMessageName: "Error",
                     cancellationToken).ConfigureAwait(false);
 
                 if (result is null || result.ToString() == "null")

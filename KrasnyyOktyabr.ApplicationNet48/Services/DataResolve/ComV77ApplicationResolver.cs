@@ -15,7 +15,8 @@ public class ComV77ApplicationResolver(
     ConnectionProperties connectionProperties,
     string ertRelativePath,
     IReadOnlyDictionary<string, string>? context,
-    string? resultName)
+    string? resultName,
+    string? errorMessageName)
     : IDataResolver
 {
     private readonly IComV77ApplicationConnectionFactory _connectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
@@ -28,13 +29,25 @@ public class ComV77ApplicationResolver(
 
     private readonly string? _resultName = resultName;
 
+    private readonly string? _errorMessageName = errorMessageName;
+
+    public ComV77ApplicationResolver(
+        IComV77ApplicationConnectionFactory connectionFactory,
+        ConnectionProperties connectionProperties,
+        string ertRelativePath,
+        IReadOnlyDictionary<string, string>? context,
+        string? resultName)
+        : this(connectionFactory, connectionProperties, ertRelativePath, context, resultName, errorMessageName: "Error")
+    {
+    }
+
     public async ValueTask<object?> ResolveAsync(CancellationToken cancellationToken)
     {
         await using IComV77ApplicationConnection connection = await _connectionFactory.GetConnectionAsync(_connectionProperties, cancellationToken).ConfigureAwait(false);
 
         await connection.ConnectAsync(cancellationToken).ConfigureAwait(false);
 
-        object? result = await connection.RunErtAsync(_ertRelativePath, _context, _resultName, cancellationToken);
+        object? result = await connection.RunErtAsync(_ertRelativePath, _context, _resultName, _errorMessageName, cancellationToken);
 
         return result;
     }
