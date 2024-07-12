@@ -8,7 +8,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
 public static class V77ApplicationHelper
 {
-    public static string DefaultProducerErtRelativePath => Path.Combine("ExtForms", "EDO", "Test", "UN_JSON_Synch.ert");
+    public static string DefaultProducerErtRelativePath => Path.Combine("ExtForms", "EDO", "Test", "GetObjectJson.ert");
 
     public static string DefaultConsumerErtRelativePath => Path.Combine("ExtForms", "EDO", "Test", "SaveObject.ert");
 

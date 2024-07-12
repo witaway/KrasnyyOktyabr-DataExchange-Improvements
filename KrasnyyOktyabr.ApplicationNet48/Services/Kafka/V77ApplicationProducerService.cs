@@ -269,7 +269,6 @@ public sealed partial class V77ApplicationProducerService(
                 {
                     { "ObjectId", objectId },
                     { "JsonMaxDepth", depth.ToString() },
-                    { "DatabaseGUIDsConnectionString", settings.DocumentGuidsDatabaseConnectionString ?? string.Empty },
                 };
 
                 object? result = await connection.RunErtAsync(

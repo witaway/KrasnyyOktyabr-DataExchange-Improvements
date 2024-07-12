@@ -159,7 +159,6 @@ public sealed class V77ApplicationPeriodProduceJobService(
                 {
                     { "ObjectId", objectId },
                     { "JsonMaxDepth", depth.ToString() },
-                    { "DatabaseGUIDsConnectionString", request.DocumentGuidsDatabaseConnectionString ?? string.Empty },
                 };
 
                 object? result = await connection.RunErtAsync(
