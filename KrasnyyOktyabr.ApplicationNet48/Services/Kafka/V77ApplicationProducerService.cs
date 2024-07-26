@@ -19,6 +19,7 @@ using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
+using KrasnyyOktyabr.ApplicationNet48.Linq;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
@@ -44,7 +45,7 @@ public sealed partial class V77ApplicationProducerService(
 
     public delegate ValueTask<List<string>> GetObjectJsonsAsync(
         V77ApplicationProducerSettings settings,
-        List<LogTransaction> logTransactions,
+        LogTransaction[] logTransactions,
         List<ObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         ILogger logger,
@@ -223,13 +224,13 @@ public sealed partial class V77ApplicationProducerService(
 
     public GetObjectJsonsAsync GetObjectJsonsTask => async (
         V77ApplicationProducerSettings settings,
-        List<LogTransaction> logTransactions,
+        LogTransaction[] logTransactions,
         List<ObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
-        if (logTransactions.Count == 0)
+        if (logTransactions.Length == 0)
         {
             return [];
         }
@@ -669,29 +670,32 @@ public sealed partial class V77ApplicationProducerService(
 
             LastActivity = DateTimeOffset.Now;
 
-            List<string> objectJsons = await _getObjectJsonsTask(
+            foreach (LogTransaction[] transactions in getLogTransactionsResult.Transactions.Chunk(10))
+            {
+                List<string> objectJsons = await _getObjectJsonsTask(
                 Settings,
-                getLogTransactionsResult.Transactions,
+                transactions,
                 _objectFilters,
                 _connectionFactory,
                 _logger,
                 cancellationToken);
 
-            Fetched += objectJsons.Count;
+                Fetched += objectJsons.Count;
 
-            LastActivity = DateTimeOffset.Now;
+                LastActivity = DateTimeOffset.Now;
 
-            int sentObjectsCount = await _sendObjectJsonsTask(
-                Settings,
-                getLogTransactionsResult.Transactions,
-                objectJsons,
-                _jsonService,
-                _kafkaService,
-                cancellationToken);
+                int sentObjectsCount = await _sendObjectJsonsTask(
+                    Settings,
+                    getLogTransactionsResult.Transactions,
+                    objectJsons,
+                    _jsonService,
+                    _kafkaService,
+                    cancellationToken);
 
-            Produced += sentObjectsCount;
+                Produced += sentObjectsCount;
 
-            LastActivity = DateTimeOffset.Now;
+                LastActivity = DateTimeOffset.Now;
+            }
 
             await CommitOffset(
                 _offsetService,

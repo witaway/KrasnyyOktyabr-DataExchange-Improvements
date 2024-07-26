@@ -61,7 +61,7 @@ public class V77ApplicationProducerServiceTests
         ErtRelativePath = "Erts/test.ert",
     };
 
-    private static List<LogTransaction> TestLogTransactions => [new LogTransaction(
+    private static LogTransaction[] TestLogTransactions => [new LogTransaction(
         objectId: "FakeObjectId",
         objectName: "FakeObjectName",
         type: "FakeTransactionType"
@@ -87,7 +87,7 @@ public class V77ApplicationProducerServiceTests
                 position: endPosition,
                 lastReadLine: endLine
             ),
-            transactions: TestLogTransactions
+            transactions: [.. TestLogTransactions]
         );
         logServiceMock
             .Setup(s => s.GetLogTransactionsAsync(It.IsAny<string>(), It.IsAny<TransactionFilterWithCommit>(), It.IsAny<CancellationToken>()))
@@ -111,7 +111,7 @@ public class V77ApplicationProducerServiceTests
     public async Task GetObjectJsonsTask_ShouldGetObjectJsons()
     {
         V77ApplicationProducerSettings settings = TestSettings;
-        List<LogTransaction> logTransactions = TestLogTransactions;
+        LogTransaction[] logTransactions = TestLogTransactions;
 
         ObjectFilter objectFilter = new(
             id: "Id1",
@@ -142,7 +142,7 @@ public class V77ApplicationProducerServiceTests
             loggerMock.Object,
             cancellationToken: default);
 
-        Assert.AreEqual(logTransactions.Count, objectJsons.Count);
+        Assert.AreEqual(logTransactions.Length, objectJsons.Count);
     }
 
     [TestMethod]
