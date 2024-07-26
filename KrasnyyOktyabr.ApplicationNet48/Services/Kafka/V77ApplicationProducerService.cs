@@ -45,7 +45,7 @@ public sealed partial class V77ApplicationProducerService(
 
     public delegate ValueTask<List<string>> GetObjectJsonsAsync(
         V77ApplicationProducerSettings settings,
-        LogTransaction[] logTransactions,
+        IEnumerable<LogTransaction> logTransactions,
         List<ObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         ILogger logger,
@@ -54,8 +54,8 @@ public sealed partial class V77ApplicationProducerService(
     /// <returns>Sent objects count.</returns>
     public delegate ValueTask<int> SendObjectJsonsAsync(
         V77ApplicationProducerSettings settings,
-        List<LogTransaction> logTransactions,
-        List<string> objectJsons,
+        IEnumerable<LogTransaction> logTransactions,
+        IEnumerable<string> objectJsons,
         IJsonService jsonService,
         IKafkaService kafkaService,
         CancellationToken cancellationToken);
@@ -224,13 +224,13 @@ public sealed partial class V77ApplicationProducerService(
 
     public GetObjectJsonsAsync GetObjectJsonsTask => async (
         V77ApplicationProducerSettings settings,
-        LogTransaction[] logTransactions,
+        IEnumerable<LogTransaction> logTransactions,
         List<ObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
-        if (logTransactions.Length == 0)
+        if (logTransactions.Count() == 0)
         {
             return [];
         }
@@ -295,30 +295,37 @@ public sealed partial class V77ApplicationProducerService(
 
     public SendObjectJsonsAsync SendObjectJsonsTask => async (
         V77ApplicationProducerSettings settings,
-        List<LogTransaction> logTransactions,
-        List<string> objectJsons,
+        IEnumerable<LogTransaction> logTransactions,
+        IEnumerable<string> objectJsons,
         IJsonService jsonService,
         IKafkaService kafkaService,
         CancellationToken cancellationToken) =>
     {
-        if (logTransactions.Count != objectJsons.Count)
+        int logTransactionsCount = logTransactions.Count();
+        int objectJsonCount = objectJsons.Count();
+
+        // Validate parameters
+        if (logTransactionsCount != objectJsonCount)
         {
-            throw new ArgumentException($"Transactions count ({logTransactions.Count}) != Object JSONs count ({objectJsons.Count})");
+            throw new ArgumentException($"Transactions count ({logTransactionsCount}) != Object JSONs count ({objectJsonCount})");
         }
 
-        List<KafkaProducerMessageData> messagesData = new(objectJsons.Count);
+        // Prepare messages for Kafka
+        List<KafkaProducerMessageData> messagesData = new(objectJsonCount);
 
-        for (int i = 0, count = objectJsons.Count; i < count; i++)
+        IEnumerable<(LogTransaction, string)> logTransactionsObjectJsons = logTransactions.Zip(objectJsons, (logTransaction, objectJson) => (logTransaction, objectJson));
+
+        foreach ((LogTransaction, string) logTransactionObjectJson in logTransactionsObjectJsons)
         {
-            string objectDateString = ObjectDateRegex.Match(logTransactions[i].ObjectName).Groups[1].Value;
+            string objectDateString = ObjectDateRegex.Match(logTransactionObjectJson.Item1.ObjectName).Groups[1].Value;
 
             Dictionary<string, object?> propertiesToAdd = new()
             {
-                { TransactionTypePropertyName, logTransactions[i].Type },
+                { TransactionTypePropertyName, logTransactionObjectJson.Item1.Type },
                 { ObjectDatePropertyName, objectDateString },
             };
 
-            KafkaProducerMessageData messageData = jsonService.BuildKafkaProducerMessageData(objectJsons[i], propertiesToAdd, settings.DataTypePropertyName);
+            KafkaProducerMessageData messageData = jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd, settings.DataTypePropertyName);
 
             messagesData.Add(messageData);
         }
@@ -329,6 +336,7 @@ public sealed partial class V77ApplicationProducerService(
 
         string infobasePubName = GetInfobasePubName(settings.InfobasePath);
 
+        // Send messages to Kafka
         int sentObjectsCount = 0;
 
         foreach (KafkaProducerMessageData messageData in messagesData)
@@ -686,7 +694,7 @@ public sealed partial class V77ApplicationProducerService(
 
                 int sentObjectsCount = await _sendObjectJsonsTask(
                     Settings,
-                    getLogTransactionsResult.Transactions,
+                    transactions,
                     objectJsons,
                     _jsonService,
                     _kafkaService,
