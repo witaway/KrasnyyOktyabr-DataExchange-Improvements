@@ -337,6 +337,7 @@ public sealed class V77ApplicationConsumerService(
         {
             _logger = logger;
             Settings = settings;
+            Topics = [.. Settings.TopicsInstructionNames.Keys];
             _wmiService = wmiService;
             _kafkaService = kafkaService;
             _jsonService = jsonService;
@@ -367,6 +368,8 @@ public sealed class V77ApplicationConsumerService(
 
         public V77ApplicationConsumerSettings Settings { get; private set; }
 
+        public string[] Topics { get; private set; }
+
         public string Key => Settings.InfobasePath;
 
         public bool Active => Error is null;
@@ -374,8 +377,6 @@ public sealed class V77ApplicationConsumerService(
         public DateTimeOffset LastActivity { get; private set; }
 
         public bool CancellationRequested => _cancellationTokenSource.IsCancellationRequested;
-
-        public IReadOnlyList<string> Topics => Settings.Topics;
 
         public string InfobaseName { get; private set; }
 
@@ -385,13 +386,14 @@ public sealed class V77ApplicationConsumerService(
 
         public int Saved { get; private set; }
 
+
         public Exception? Error { get; private set; }
 
         private async Task RunConsumerAsync(CancellationToken cancellationToken)
         {
             try
             {
-                using IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Settings.Topics, ConsumerGroup);
+                using IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Topics, ConsumerGroup);
 
                 while (!cancellationToken.IsCancellationRequested)
                 {

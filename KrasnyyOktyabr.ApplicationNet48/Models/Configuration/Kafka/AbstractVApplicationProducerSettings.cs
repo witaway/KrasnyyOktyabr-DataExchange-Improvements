@@ -13,15 +13,9 @@ public class AbstractVApplicationProducerSettings : AbstractSuspendableSettings
     [Required]
     public string DataTypePropertyName { get; set; }
 
-    /// <summary>
-    /// Entries format - <c>"{id}:{depth}"</c>.
-    /// </summary>
     [Required]
-    public string[] ObjectFilters { get; set; }
+    public VApplicationObjectFilter[] ObjectFilters { get; set; }
 
     [Required]
     public string[] TransactionTypeFilters { get; set; }
-
-#nullable enable
-    public string? DocumentGuidsDatabaseConnectionString { get; set; }
 }

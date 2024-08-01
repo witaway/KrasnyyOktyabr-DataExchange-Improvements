@@ -355,7 +355,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         public bool CancellationRequested => _cancellationTokenSource.IsCancellationRequested;
 
-        public IReadOnlyList<string> Topics => Settings.Topics;
+        public IReadOnlyList<string> Topics => [.. Settings.TopicsInstructionNames.Keys];
 
         public string InfobaseName { get; private set; }
 
@@ -371,7 +371,7 @@ public sealed partial class V83ApplicationConsumerService(
         {
             try
             {
-                using IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Settings.Topics, ConsumerGroup);
+                using IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Topics, ConsumerGroup);
 
                 while (!cancellationToken.IsCancellationRequested)
                 {

@@ -7,10 +7,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 public class AbstractConsumerSettings : AbstractSuspendableSettings
 {
     [Required]
-    public string[] Topics { get; set; }
-
-    [Required]
-    [ConfigurationKeyName("Instructions")]
+    [ConfigurationKeyName("TopicsInstructions")]
     public Dictionary<string, string> TopicsInstructionNames { get; set; }
 
 #nullable enable

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -7,6 +8,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Services;
 
 public static class ValidationHelper
 {
+    /// <exception cref="ValidationException"></exception>
     public static void ValidateObject(object objectToValidate)
     {
         List<ValidationResult> validationResults = [];
@@ -21,30 +23,34 @@ public static class ValidationHelper
     }
 
 #nullable enable
+
+    /// <remarks>
+    /// Validates only outer properties, nested objects are ignored.
+    /// </remarks>
     public static TSettings[]? GetAndValidateKafkaClientSettings<TSettings>(IConfiguration configuration, string section, ILogger logger)
     {
-        TSettings[]? settings = configuration
+        TSettings[]? clientsSettings = configuration
             .GetSection(section)
             .Get<TSettings[]>();
 
-        if (settings is null)
+        if (clientsSettings is null || clientsSettings.Length == 0)
         {
             return null;
         }
 
         try
         {
-            foreach (TSettings setting in settings)
+            foreach (TSettings clientSettings in clientsSettings)
             {
-                if (setting is null)
+                if (clientSettings is null)
                 {
                     continue;
                 }
 
-                ValidateObject(setting);
+                ValidateObject(clientSettings);
             }
 
-            return settings;
+            return clientsSettings;
         }
         catch (ValidationException ex)
         {
@@ -53,5 +59,33 @@ public static class ValidationHelper
 
         return null;
     }
-#nullable disable
+
+    public static TSettings[]? GetAndValidateVApplicationKafkaClientSettings<TSettings>(IConfiguration configuration, string section, ILogger logger) where TSettings : AbstractVApplicationProducerSettings
+    {
+        TSettings[]? clientsSettings = GetAndValidateKafkaClientSettings<TSettings>(configuration, section, logger);
+
+        if (clientsSettings is null || clientsSettings.Length == 0)
+        {
+            return null;
+        }
+
+        try
+        {
+            foreach (TSettings clientSettings in clientsSettings)
+            {
+                foreach (VApplicationObjectFilter objectFilter in clientSettings.ObjectFilters)
+                {
+                    ValidateObject(objectFilter);
+                }
+            }
+
+            return clientsSettings;
+        }
+        catch (ValidationException ex)
+        {
+            logger.LogError(ex, "Invalid configuration at '{Position}'", section);
+        }
+
+        return null;
+    }
 }

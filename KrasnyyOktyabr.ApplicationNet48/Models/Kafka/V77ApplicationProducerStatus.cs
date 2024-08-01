@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using KrasnyyOktyabr.ApplicationNet48.Models.Configuration;
 using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Kafka;

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,8 +67,8 @@ public sealed class V83ApplicationProducerService(
                     Active = producer.Active,
                     LastActivity = producer.LastActivity,
                     ErrorMessage = producer.Error?.Message,
-                    ObjectFilters = producer.ObjectFilters,
-                    TransactionTypeFilters = producer.TransactionTypes,
+                    ObjectFilters = producer.CacheObjectFiltersList,
+                    TransactionTypeFilters = producer.Settings.TransactionTypeFilters,
                     Fetched = producer.Fetched,
                     Produced = producer.Produced,
                     InfobaseUrl = producer.InfobaseUrl,
@@ -193,7 +194,7 @@ public sealed class V83ApplicationProducerService(
     }
 
     private V83ApplicationProducerSettings[]? GetProducersSettings()
-        => ValidationHelper.GetAndValidateKafkaClientSettings<V83ApplicationProducerSettings>(configuration, V83ApplicationProducerSettings.Position, logger);
+        => ValidationHelper.GetAndValidateVApplicationKafkaClientSettings<V83ApplicationProducerSettings>(configuration, V83ApplicationProducerSettings.Position, logger);
 
     /// <summary>
     /// Creates new <see cref="V83ApplicationProducer"/> and saves it to <see cref="_producers"/>.
@@ -267,6 +268,9 @@ public sealed class V83ApplicationProducerService(
             _getLogTransactionsTask = getLogTransactionsTask;
             _producerTask = Task.Run(() => RunProducerAsync(cancellationToken), cancellationToken);
 
+            // Prepare cached values
+            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.IdPrefix, f.JsonDepth)).ToList().AsReadOnly();
+
             LastActivity = DateTimeOffset.Now;
         }
 
@@ -290,9 +294,7 @@ public sealed class V83ApplicationProducerService(
 
         public string DataTypeJsonPropertyName => Settings.DataTypePropertyName;
 
-        public IReadOnlyList<string> ObjectFilters => Settings.ObjectFilters;
-
-        public IReadOnlyList<string> TransactionTypes => Settings.TransactionTypeFilters;
+        public IReadOnlyList<ObjectFilter> CacheObjectFiltersList { get; private set; }
 
         public Exception? Error { get; private set; }
 

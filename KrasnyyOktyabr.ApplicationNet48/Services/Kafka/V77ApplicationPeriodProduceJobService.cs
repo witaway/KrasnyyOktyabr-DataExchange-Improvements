@@ -342,7 +342,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
             _jsonService = jsonService;
             _kafkaService = kafkaService;
 
-            _objectFilters = GetObjectFilters(request);
+            _objectFilters = [.. request.ObjectFilters];
 
             _cancellationTokenSource = new();
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
@@ -467,17 +467,6 @@ public sealed class V77ApplicationPeriodProduceJobService(
     private static string GetInfobasePubName(string infobasePath) => Path.GetFileName(infobasePath);
 
     private static string GetErtRelativePath(V77ApplicationPeriodProduceJobRequest request) => request.ErtRelativePath ?? DefaultProducerErtRelativePath;
-
-    private static List<ObjectFilter> GetObjectFilters(V77ApplicationPeriodProduceJobRequest request)
-    {
-        return request.ObjectFilters
-            .Select(f => f.Split(ObjectFilterValuesSeparator))
-            .Select(splitted => new ObjectFilter(
-                id: splitted[0],
-                depth: int.TryParse(splitted[1], out int depth) ? depth : ObjectFilterDefaultDepth
-            ))
-            .ToList();
-    }
 
     private class FailedToStartJob(string infobasePath)
         : Exception($"Failed to start job on '{infobasePath}' (probably one is already running)")

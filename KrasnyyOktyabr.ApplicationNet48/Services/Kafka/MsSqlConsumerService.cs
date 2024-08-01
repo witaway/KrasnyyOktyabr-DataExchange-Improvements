@@ -341,7 +341,7 @@ public sealed class MsSqlConsumerService(
 
         public bool CancellationRequested => _cancellationTokenSource.IsCancellationRequested;
 
-        public IReadOnlyList<string> Topics => Settings.Topics;
+        public IReadOnlyList<string> Topics => [.. Settings.TopicsInstructionNames.Keys];
 
         public string DatabaseName { get; private set; }
 
@@ -359,7 +359,7 @@ public sealed class MsSqlConsumerService(
         {
             try
             {
-                using IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Settings.Topics, ConsumerGroup);
+                using IConsumer<string, string> consumer = _kafkaService.GetConsumer<string, string>(Topics, ConsumerGroup);
 
                 while (!cancellationToken.IsCancellationRequested)
                 {

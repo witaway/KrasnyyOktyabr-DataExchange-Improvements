@@ -37,7 +37,7 @@ public sealed partial class V77ApplicationProducerService(
 {
     public delegate ValueTask<GetLogTransactionsResult> GetLogTransactionsAsync(
         V77ApplicationProducerSettings settings,
-        List<ObjectFilter> objectFilters,
+        IEnumerable<VApplicationObjectFilter> objectFilters,
         IOffsetService offsetService,
         IV77ApplicationLogService logService,
         ILogger logger,
@@ -46,7 +46,7 @@ public sealed partial class V77ApplicationProducerService(
     public delegate ValueTask<List<string>> GetObjectJsonsAsync(
         V77ApplicationProducerSettings settings,
         IEnumerable<LogTransaction> logTransactions,
-        List<ObjectFilter> objectFilters,
+        IEnumerable<VApplicationObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         ILogger logger,
         CancellationToken cancellationToken);
@@ -98,8 +98,8 @@ public sealed partial class V77ApplicationProducerService(
                     Active = producer.Active,
                     LastActivity = producer.LastActivity,
                     ErrorMessage = producer.Error?.Message,
-                    ObjectFilters = producer.ObjectFilters,
-                    TransactionTypeFilters = producer.TransactionTypes,
+                    ObjectFilters = producer.CacheObjectFiltersList,
+                    TransactionTypeFilters = producer.Settings.TransactionTypeFilters,
                     GotLogTransactions = producer.GotFromLog,
                     Fetched = producer.Fetched,
                     Produced = producer.Produced,
@@ -198,7 +198,7 @@ public sealed partial class V77ApplicationProducerService(
 
     public GetLogTransactionsAsync GetLogTransactionsTask => async (
         V77ApplicationProducerSettings settings,
-        List<ObjectFilter> objectFilters,
+        IEnumerable<VApplicationObjectFilter> objectFilters,
         IOffsetService offsetService,
         IV77ApplicationLogService logService,
         ILogger logger,
@@ -213,7 +213,7 @@ public sealed partial class V77ApplicationProducerService(
         TransactionFilterWithCommit filter = new(
             startPosition: commitedOffset.Position,
             committedLine: commitedOffset.LastReadLine,
-            objectIds: objectFilters.Select(f => f.Id).ToArray(),
+            objectIds: [.. objectFilters.Select(f => f.IdPrefix)],
             transactionTypes: settings.TransactionTypeFilters
         );
 
@@ -225,7 +225,7 @@ public sealed partial class V77ApplicationProducerService(
     public GetObjectJsonsAsync GetObjectJsonsTask => async (
         V77ApplicationProducerSettings settings,
         IEnumerable<LogTransaction> logTransactions,
-        List<ObjectFilter> objectFilters,
+        IEnumerable<VApplicationObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         ILogger logger,
         CancellationToken cancellationToken) =>
@@ -256,8 +256,8 @@ public sealed partial class V77ApplicationProducerService(
             foreach (string objectId in objectIds)
             {
                 int depth = objectFilters
-                .Where(f => objectId.StartsWith(f.Id))
-                .Select(f => f.Depth)
+                .Where(f => objectId.StartsWith(f.IdPrefix))
+                .Select(f => f.JsonDepth)
                 .FirstOrDefault();
 
                 if (depth == default)
@@ -384,7 +384,7 @@ public sealed partial class V77ApplicationProducerService(
     }
 
     private V77ApplicationProducerSettings[]? GetProducersSettings()
-        => ValidationHelper.GetAndValidateKafkaClientSettings<V77ApplicationProducerSettings>(configuration, V77ApplicationProducerSettings.Position, logger);
+        => ValidationHelper.GetAndValidateVApplicationKafkaClientSettings<V77ApplicationProducerSettings>(configuration, V77ApplicationProducerSettings.Position, logger);
 
     /// <summary>
     /// Creates new <see cref="V77ApplicationProducer"/> and saves it to <see cref="_producers"/>.
@@ -445,8 +445,6 @@ public sealed partial class V77ApplicationProducerService(
 
         private readonly IKafkaService _kafkaService;
 
-        private readonly List<ObjectFilter> _objectFilters;
-
         /// <remarks>
         /// Need to be disposed.
         /// </remarks>
@@ -492,7 +490,6 @@ public sealed partial class V77ApplicationProducerService(
             _connectionFactory = connectionFactory;
             _jsonService = jsonService;
             _kafkaService = kafkaService;
-            _objectFilters = GetObjectFilters(settings);
 
             InfobaseFullPath = GetInfobaseFullPath(settings.InfobasePath);
 
@@ -523,6 +520,9 @@ public sealed partial class V77ApplicationProducerService(
 
             _isDisposed = false;
 
+            // Prepare cached values
+            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.IdPrefix, f.JsonDepth)).ToList().AsReadOnly();
+
             LastActivity = DateTimeOffset.Now;
         }
 
@@ -546,9 +546,7 @@ public sealed partial class V77ApplicationProducerService(
 
         public string DataTypeJsonPropertyName => Settings.DataTypePropertyName;
 
-        public IReadOnlyList<ObjectFilter> ObjectFilters => _objectFilters.AsReadOnly();
-
-        public IReadOnlyList<string> TransactionTypes => Settings.TransactionTypeFilters;
+        public IReadOnlyList<ObjectFilter> CacheObjectFiltersList { get; private set; }
 
         public Exception? Error { get; private set; }
 
@@ -656,7 +654,7 @@ public sealed partial class V77ApplicationProducerService(
 
             GetLogTransactionsResult getLogTransactionsResult = await _getLogTransactionsTask(
                 Settings,
-                _objectFilters,
+                Settings.ObjectFilters,
                 _offsetService,
                 _logService,
                 _logger,
@@ -681,12 +679,12 @@ public sealed partial class V77ApplicationProducerService(
             foreach (LogTransaction[] transactions in getLogTransactionsResult.Transactions.Chunk(10))
             {
                 List<string> objectJsons = await _getObjectJsonsTask(
-                Settings,
-                transactions,
-                _objectFilters,
-                _connectionFactory,
-                _logger,
-                cancellationToken);
+                    Settings,
+                    transactions,
+                    Settings.ObjectFilters,
+                    _connectionFactory,
+                    _logger,
+                    cancellationToken);
 
                 Fetched += objectJsons.Count;
 
@@ -763,17 +761,6 @@ public sealed partial class V77ApplicationProducerService(
             key: infobaseFullPath,
             offset: position is not null ? $"{position}{s_offsetValuesSeparator}{lastReadLine}" : lastReadLine,
             cancellationToken);
-    }
-
-    private static List<ObjectFilter> GetObjectFilters(V77ApplicationProducerSettings settings)
-    {
-        return settings.ObjectFilters
-            .Select(f => f.Split(ObjectFilterValuesSeparator))
-            .Select(splitted => new ObjectFilter(
-                id: splitted[0],
-                depth: int.TryParse(splitted[1], out int depth) ? depth : ObjectFilterDefaultDepth
-            ))
-            .ToList();
     }
 
     public class FailedToGetObjectException : Exception

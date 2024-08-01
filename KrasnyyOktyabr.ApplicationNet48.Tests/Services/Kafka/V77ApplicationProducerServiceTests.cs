@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
-using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -55,7 +54,17 @@ public class V77ApplicationProducerServiceTests
         InfobasePath = "TestInfobasePath",
         Username = "TestUser",
         Password = "TestPassword",
-        ObjectFilters = ["Id1:3", "Id2:2"],
+        ObjectFilters = [
+            new VApplicationObjectFilter()
+            {
+                IdPrefix = "Id1",
+                JsonDepth = 3
+            },
+            new VApplicationObjectFilter()
+            {
+                IdPrefix = "Id2",
+                JsonDepth = 2
+            }],
         TransactionTypeFilters = ["Type1", "Type2"],
         DataTypePropertyName = "TestDatatype",
         ErtRelativePath = "Erts/test.ert",
@@ -113,11 +122,12 @@ public class V77ApplicationProducerServiceTests
         V77ApplicationProducerSettings settings = TestSettings;
         LogTransaction[] logTransactions = TestLogTransactions;
 
-        ObjectFilter objectFilter = new(
-            id: "Id1",
-            depth: 3
-        );
-        List<ObjectFilter> objectFilters = [objectFilter];
+        VApplicationObjectFilter objectFilter = new()
+        {
+            IdPrefix = "Id1",
+            JsonDepth = 3
+        };
+        List<VApplicationObjectFilter> objectFilters = [objectFilter];
 
         // Setting up connection mock
         Mock<IComV77ApplicationConnection> connectionMock = new();

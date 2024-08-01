@@ -301,6 +301,7 @@
     <Compile Include="Models\Configuration\Kafka\V77ApplicationProducerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V83ApplicationConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V83ApplicationProducerSettings.cs" />
+    <Compile Include="Models\Configuration\Kafka\VApplicationObjectFilter.cs" />
     <Compile Include="Models\Configuration\TimePeriod.cs" />
     <Compile Include="Models\Health\ComV77ApplicationConnectionHealthStatus.cs" />
     <Compile Include="Models\Health\LegacyConsumerHealthStatus.cs" />

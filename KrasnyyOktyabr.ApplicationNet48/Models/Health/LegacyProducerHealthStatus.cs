@@ -1,7 +1,9 @@
 ﻿#nullable enable
 
 using System;
+using System.Collections.Generic;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration;
+using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using Newtonsoft.Json;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Health;
@@ -21,7 +23,7 @@ public class LegacyProducerHealthStatus
     public string? ErrorMessage { get; set; }
 
     [JsonProperty("objectFilters")]
-    public string[]? ObjectFilters { get; set; }
+    public IEnumerable<ObjectFilter>? ObjectFilters { get; set; }
 
     [JsonProperty("transactionTypes")]
     public string[]? TransactionTypes { get; set; }
