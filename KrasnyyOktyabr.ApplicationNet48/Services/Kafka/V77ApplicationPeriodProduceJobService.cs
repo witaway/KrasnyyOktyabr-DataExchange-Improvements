@@ -40,7 +40,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
     public delegate ValueTask<List<string>> GetObjectJsonsAsync(
         ILogger logger,
         V77ApplicationPeriodProduceJobRequest request,
-        LogTransaction[] logTransactionsChunk,
+        LogTransaction[] logTransactions,
         List<ObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         CancellationToken cancellationToken);
@@ -49,7 +49,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
     public delegate ValueTask<int> SendObjectJsonsAsync(
         ILogger logger,
         V77ApplicationPeriodProduceJobRequest request,
-        LogTransaction[] logTransactionsChunk,
+        LogTransaction[] logTransactions,
         List<string> objectJsons,
         IJsonService jsonService,
         IKafkaService kafkaService,
@@ -114,12 +114,12 @@ public sealed class V77ApplicationPeriodProduceJobService(
     public GetObjectJsonsAsync GetObjectJsonsTask => async (
         ILogger logger,
         V77ApplicationPeriodProduceJobRequest request,
-        LogTransaction[] logTransactionsChunk,
+        LogTransaction[] logTransactions,
         List<ObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         CancellationToken cancellationToken) =>
     {
-        if (logTransactionsChunk.Length == 0)
+        if (logTransactions.Length == 0)
         {
             return [];
         }
@@ -128,7 +128,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
 
         logger.LogGettingObjectsFromInfobase(infobaseFullPath);
 
-        List<string> objectIds = logTransactionsChunk.Select(t => t.ObjectId).ToList();
+        List<string> objectIds = logTransactions.Select(t => t.ObjectId).ToList();
 
         ConnectionProperties connectionProperties = new(
             infobasePath: infobaseFullPath,
@@ -185,7 +185,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
     public SendObjectJsonsAsync SendObjectJsonsTask => async (
         ILogger logger,
         V77ApplicationPeriodProduceJobRequest request,
-        LogTransaction[] logTransactionsChunk,
+        LogTransaction[] logTransactions,
         List<string> objectJsons,
         IJsonService jsonService,
         IKafkaService kafkaService,
@@ -193,17 +193,32 @@ public sealed class V77ApplicationPeriodProduceJobService(
     {
         List<KafkaProducerMessageData> messagesData = new(objectJsons.Count);
 
-        for (int i = 0, count = objectJsons.Count; i < count; i++)
+        IEnumerable<(LogTransaction, string)> logTransactionsObjectJsons = logTransactions.Zip(objectJsons, (logTransaction, objectJson) => (logTransaction, objectJson));
+
+        string infobasePubName = GetInfobasePubName(request.InfobasePath);
+
+        foreach ((LogTransaction, string) logTransactionObjectJson in logTransactionsObjectJsons)
         {
-            string objectDateString = ObjectDateRegex.Match(logTransactionsChunk[i].ObjectName).Groups[1].Value;
+            string objectDateString = ObjectDateRegex.Match(logTransactionObjectJson.Item1.ObjectName).Groups[1].Value;
 
             Dictionary<string, object?> propertiesToAdd = new()
             {
-                { TransactionTypePropertyName, logTransactionsChunk[i].Type },
+                { TransactionTypePropertyName, logTransactionObjectJson.Item1.Type },
                 { ObjectDatePropertyName, objectDateString },
             };
 
-            KafkaProducerMessageData messageData = jsonService.BuildKafkaProducerMessageData(objectJsons[i], propertiesToAdd, request.DataTypePropertyName);
+            string? topicFromSettings = request.ObjectFilters
+            .Where(f => logTransactionObjectJson.Item1.ObjectId.StartsWith(f.Id))
+            .Select(f => f.Topic)
+            .FirstOrDefault();
+
+            KafkaProducerMessageData messageData = topicFromSettings is null
+                ? jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd, request.DataTypePropertyName)
+                : jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd);
+
+            messageData.TopicName = topicFromSettings is null
+                ? kafkaService.BuildTopicName(infobasePubName, messageData.DataType)
+                : topicFromSettings;
 
             messagesData.Add(messageData);
         }
@@ -211,8 +226,6 @@ public sealed class V77ApplicationPeriodProduceJobService(
         logger.LogSendingObjects(messagesData.Count);
 
         using IProducer<string, string> producer = kafkaService.GetProducer<string, string>();
-
-        string infobasePubName = GetInfobasePubName(request.InfobasePath);
 
         int sentObjectsCount = 0;
 

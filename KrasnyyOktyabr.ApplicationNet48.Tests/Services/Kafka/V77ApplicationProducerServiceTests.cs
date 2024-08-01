@@ -164,7 +164,7 @@ public class V77ApplicationProducerServiceTests
             InfobasePath = @"D:\Bases\TestInfobase",
             Username = null!,
             Password = null!,
-            ObjectFilters = null!,
+            ObjectFilters = [],
             TransactionTypeFilters = null!,
             DataTypePropertyName = dataTypeJsonPropertyName,
             ErtRelativePath = null!,

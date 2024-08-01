@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -15,11 +17,13 @@ public interface IJsonService
         public Dictionary<string, dynamic> ColumnValues { get; } = columnValues;
     }
 
-    public readonly struct KafkaProducerMessageData(string objectJson, string dataType)
+    public struct KafkaProducerMessageData(string objectJson, string? dataType)
     {
-        public string ObjectJson { get; } = objectJson;
+        public readonly string ObjectJson { get; } = objectJson;
 
-        public string DataType { get; } = dataType;
+        public readonly string? DataType { get; } = dataType;
+
+        public string? TopicName { get; set; }
     }
 
     int ClearCachedExpressions();
@@ -29,9 +33,16 @@ public interface IJsonService
     /// add properties from <paramref name="propertiesToAdd"/>
     /// and extract property with name <paramref name="dataTypePropertyName"/>.
     /// </summary>
-    /// <param name="dataType"></param>
     /// <exception cref="FailedToGetDataTypeException"></exception>
     KafkaProducerMessageData BuildKafkaProducerMessageData(string objectJson, Dictionary<string, object?> propertiesToAdd, string dataTypePropertyName);
+
+    /// <summary>
+    /// Remove empty properties using <see cref="JsonTransform.JsonHelper"/>,
+    /// add properties from <paramref name="propertiesToAdd"/>.
+    /// </summary>
+    /// <exception cref="FailedToGetDataTypeException"></exception>
+    /// <returns><see cref="KafkaProducerMessageData"/> with <c>null</c> <see cref="KafkaProducerMessageData.DataType"/>.</returns>
+    KafkaProducerMessageData BuildKafkaProducerMessageData(string objectJson, Dictionary<string, object?> propertiesToAdd);
 
     /// <param name="inputStream">
     /// Must contain JSON: <c>"{'instructions': ... ,'input': { ... } }"</c>

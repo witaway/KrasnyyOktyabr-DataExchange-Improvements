@@ -269,7 +269,7 @@ public sealed class V83ApplicationProducerService(
             _producerTask = Task.Run(() => RunProducerAsync(cancellationToken), cancellationToken);
 
             // Prepare cached values
-            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.IdPrefix, f.JsonDepth)).ToList().AsReadOnly();
+            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.IdPrefix, f.JsonDepth, f.Topic)).ToList().AsReadOnly();
 
             LastActivity = DateTimeOffset.Now;
         }

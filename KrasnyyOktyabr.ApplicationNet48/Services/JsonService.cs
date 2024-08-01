@@ -70,6 +70,32 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
             dataType: dataType
         );
     }
+
+    public KafkaProducerMessageData BuildKafkaProducerMessageData(
+        string objectJson,
+        Dictionary<string, object?> propertiesToAdd)
+    {
+        if (objectJson is null)
+        {
+            throw new ArgumentNullException(nameof(objectJson));
+        }
+
+        if (propertiesToAdd is null)
+        {
+            throw new ArgumentNullException(nameof(propertiesToAdd));
+        }
+
+        JObject jObject = ParseObjectJson(objectJson);
+
+        RemoveEmptyProperties(jObject);
+
+        AddProperties(jObject, propertiesToAdd);
+
+        return new(
+            objectJson: jObject.ToString(Formatting.None),
+            dataType: null
+        );
+    }
 #nullable disable
 
     /// <param name="outputStream">Is written synchronously.</param>

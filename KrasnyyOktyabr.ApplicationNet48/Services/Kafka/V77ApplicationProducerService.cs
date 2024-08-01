@@ -315,6 +315,8 @@ public sealed partial class V77ApplicationProducerService(
 
         IEnumerable<(LogTransaction, string)> logTransactionsObjectJsons = logTransactions.Zip(objectJsons, (logTransaction, objectJson) => (logTransaction, objectJson));
 
+        string infobasePubName = GetInfobasePubName(settings.InfobasePath);
+
         foreach ((LogTransaction, string) logTransactionObjectJson in logTransactionsObjectJsons)
         {
             string objectDateString = ObjectDateRegex.Match(logTransactionObjectJson.Item1.ObjectName).Groups[1].Value;
@@ -325,7 +327,18 @@ public sealed partial class V77ApplicationProducerService(
                 { ObjectDatePropertyName, objectDateString },
             };
 
-            KafkaProducerMessageData messageData = jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd, settings.DataTypePropertyName);
+            string? topicFromSettings = settings.ObjectFilters
+            .Where(f => logTransactionObjectJson.Item1.ObjectId.StartsWith(f.IdPrefix))
+            .Select(f => f.Topic)
+            .FirstOrDefault();
+
+            KafkaProducerMessageData messageData = topicFromSettings is null
+                ? jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd, settings.DataTypePropertyName)
+                : jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd);
+
+            messageData.TopicName = topicFromSettings is null
+                ? kafkaService.BuildTopicName(infobasePubName, messageData.DataType)
+                : topicFromSettings;
 
             messagesData.Add(messageData);
         }
@@ -333,8 +346,6 @@ public sealed partial class V77ApplicationProducerService(
         logger.LogSendingObjects(messagesData.Count);
 
         using IProducer<string, string> producer = kafkaService.GetProducer<string, string>();
-
-        string infobasePubName = GetInfobasePubName(settings.InfobasePath);
 
         // Send messages to Kafka
         int sentObjectsCount = 0;
@@ -347,11 +358,9 @@ public sealed partial class V77ApplicationProducerService(
                 Value = messageData.ObjectJson,
             };
 
-            string topicName = kafkaService.BuildTopicName(infobasePubName, messageData.DataType);
+            await producer.ProduceAsync(messageData.TopicName, kafkaMessage, cancellationToken).ConfigureAwait(false);
 
-            await producer.ProduceAsync(topicName, kafkaMessage, cancellationToken).ConfigureAwait(false);
-
-            logger.LogProducedMessage(topicName, kafkaMessage.Key, kafkaMessage.Value);
+            logger.LogProducedMessage(messageData.TopicName, kafkaMessage.Key, kafkaMessage.Value);
 
             sentObjectsCount++;
         }
@@ -521,7 +530,7 @@ public sealed partial class V77ApplicationProducerService(
             _isDisposed = false;
 
             // Prepare cached values
-            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.IdPrefix, f.JsonDepth)).ToList().AsReadOnly();
+            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.IdPrefix, f.JsonDepth, f.Topic)).ToList().AsReadOnly();
 
             LastActivity = DateTimeOffset.Now;
         }

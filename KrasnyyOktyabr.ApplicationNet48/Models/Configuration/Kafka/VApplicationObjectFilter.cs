@@ -9,4 +9,7 @@ public class VApplicationObjectFilter
 
     [Range(1, int.MaxValue, ErrorMessage = "Only natural numbers allowed")]
     public int JsonDepth { get; set; }
+
+#nullable enable
+    public string? Topic { get; set; }
 }
