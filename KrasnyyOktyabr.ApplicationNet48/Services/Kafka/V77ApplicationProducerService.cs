@@ -310,15 +310,17 @@ public sealed partial class V77ApplicationProducerService(
             throw new ArgumentException($"Transactions count ({logTransactionsCount}) != Object JSONs count ({objectJsonCount})");
         }
 
-        // Prepare messages for Kafka
-        List<KafkaProducerMessageData> messagesData = new(objectJsonCount);
-
+        // 1. Merge sequences of log transactions and object JSONs
         IEnumerable<(LogTransaction, string)> logTransactionsObjectJsons = logTransactions.Zip(objectJsons, (logTransaction, objectJson) => (logTransaction, objectJson));
 
         string infobasePubName = GetInfobasePubName(settings.InfobasePath);
 
+        // 2. Prepare messages for Kafka
+        List<KafkaProducerMessageData> messagesData = new(objectJsonCount);
+
         foreach ((LogTransaction, string) logTransactionObjectJson in logTransactionsObjectJsons)
         {
+            // 2.1 Try to extract the date from object name
             string objectDateString = ObjectDateRegex.Match(logTransactionObjectJson.Item1.ObjectName).Groups[1].Value;
 
             Dictionary<string, object?> propertiesToAdd = new()
@@ -327,15 +329,18 @@ public sealed partial class V77ApplicationProducerService(
                 { ObjectDatePropertyName, objectDateString },
             };
 
+            // 2.2 Determine if Kafka topic name was specified in settings
             string? topicFromSettings = settings.ObjectFilters
             .Where(f => logTransactionObjectJson.Item1.ObjectId.StartsWith(f.IdPrefix))
             .Select(f => f.Topic)
             .FirstOrDefault();
 
+            // 2.3 Collect data needed to send Kafka message
             KafkaProducerMessageData messageData = topicFromSettings is null
                 ? jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd, settings.DataTypePropertyName)
                 : jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd);
 
+            // 2.4 Use Kafka topic name from settings or generate
             messageData.TopicName = topicFromSettings is null
                 ? kafkaService.BuildTopicName(infobasePubName, messageData.DataType)
                 : topicFromSettings;
@@ -347,7 +352,7 @@ public sealed partial class V77ApplicationProducerService(
 
         using IProducer<string, string> producer = kafkaService.GetProducer<string, string>();
 
-        // Send messages to Kafka
+        // 3. Send messages to Kafka
         int sentObjectsCount = 0;
 
         foreach (KafkaProducerMessageData messageData in messagesData)
