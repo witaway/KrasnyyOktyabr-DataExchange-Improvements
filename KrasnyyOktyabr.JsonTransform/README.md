@@ -453,7 +453,7 @@ Checks if `left` operand is _greater or equal_ than the `right` one.
 
 ```json
 {
-  "$gt": {
+  "$gte": {
     "left": 65.9,
     "right": 66
   }
