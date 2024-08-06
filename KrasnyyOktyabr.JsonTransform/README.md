@@ -1055,12 +1055,12 @@ Runs nested expression and converts its result to the specified type.
 
 When `type` is:
 
-* _"int"_ -> `int`
-* _"float"_ -> `float`
-* _"string"_ -> `string`
-* _"bool"_ -> `bool`
-* _"array"_ -> `array`
-* _"valuetable"_ -> `valuetable`
+* _"int"_ -> `Int64`
+* _"float"_ -> `Decimal`
+* _"string"_ -> `String`
+* _"bool"_ -> `Boolean`
+* _"array"_ -> `Object[]`
+* _"valuetable"_ -> `IValueTable`
 
 ##### Example
 
