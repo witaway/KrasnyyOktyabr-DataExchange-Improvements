@@ -239,6 +239,6 @@ public static class KafkaLoggingHelper
 
     public static void LogAlreadyDisposed(this ILogger logger, string key)
     {
-        logger.LogError("Already disposed '{Key}'", key);
+        logger.LogWarning("Already disposed '{Key}'", key);
     }
 }
