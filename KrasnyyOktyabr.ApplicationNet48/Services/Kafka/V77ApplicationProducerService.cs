@@ -37,7 +37,7 @@ public sealed partial class V77ApplicationProducerService(
 {
     public delegate ValueTask<GetLogTransactionsResult> GetLogTransactionsAsync(
         V77ApplicationProducerSettings settings,
-        IEnumerable<VApplicationObjectFilter> objectFilters,
+        IEnumerable<V77ApplicationObjectFilter> objectFilters,
         IOffsetService offsetService,
         IV77ApplicationLogService logService,
         ILogger logger,
@@ -46,7 +46,7 @@ public sealed partial class V77ApplicationProducerService(
     public delegate ValueTask<List<string>> GetObjectJsonsAsync(
         V77ApplicationProducerSettings settings,
         IEnumerable<LogTransaction> logTransactions,
-        IEnumerable<VApplicationObjectFilter> objectFilters,
+        IEnumerable<V77ApplicationObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         ILogger logger,
         CancellationToken cancellationToken);
@@ -60,7 +60,7 @@ public sealed partial class V77ApplicationProducerService(
         IKafkaService kafkaService,
         CancellationToken cancellationToken);
 
-    private static readonly char s_offsetValuesSeparator = '&';
+    private const char OffsetValuesSeparator = '&';
 
     /// <summary>
     /// <para>
@@ -198,7 +198,7 @@ public sealed partial class V77ApplicationProducerService(
 
     public GetLogTransactionsAsync GetLogTransactionsTask => async (
         V77ApplicationProducerSettings settings,
-        IEnumerable<VApplicationObjectFilter> objectFilters,
+        IEnumerable<V77ApplicationObjectFilter> objectFilters,
         IOffsetService offsetService,
         IV77ApplicationLogService logService,
         ILogger logger,
@@ -225,7 +225,7 @@ public sealed partial class V77ApplicationProducerService(
     public GetObjectJsonsAsync GetObjectJsonsTask => async (
         V77ApplicationProducerSettings settings,
         IEnumerable<LogTransaction> logTransactions,
-        IEnumerable<VApplicationObjectFilter> objectFilters,
+        IEnumerable<V77ApplicationObjectFilter> objectFilters,
         IComV77ApplicationConnectionFactory connectionFactory,
         ILogger logger,
         CancellationToken cancellationToken) =>
@@ -331,9 +331,9 @@ public sealed partial class V77ApplicationProducerService(
 
             // 2.2 Determine if Kafka topic name was specified in settings
             string? topicFromSettings = settings.ObjectFilters
-            .Where(f => logTransactionObjectJson.Item1.ObjectId.StartsWith(f.IdPrefix))
-            .Select(f => f.Topic)
-            .FirstOrDefault();
+                .Where(f => logTransactionObjectJson.Item1.ObjectId.StartsWith(f.IdPrefix))
+                .Select(f => f.Topic)
+                .FirstOrDefault();
 
             // 2.3 Collect data needed to send Kafka message
             KafkaProducerMessageData messageData = topicFromSettings is null
@@ -350,9 +350,9 @@ public sealed partial class V77ApplicationProducerService(
 
         logger.LogSendingObjects(messagesData.Count);
 
+        // 3. Send messages to Kafka
         using IProducer<string, string> producer = kafkaService.GetProducer<string, string>();
 
-        // 3. Send messages to Kafka
         int sentObjectsCount = 0;
 
         foreach (KafkaProducerMessageData messageData in messagesData)
@@ -398,7 +398,7 @@ public sealed partial class V77ApplicationProducerService(
     }
 
     private V77ApplicationProducerSettings[]? GetProducersSettings()
-        => ValidationHelper.GetAndValidateVApplicationKafkaClientSettings<V77ApplicationProducerSettings>(configuration, V77ApplicationProducerSettings.Position, logger);
+        => ValidationHelper.GetAndValidateVApplicationKafkaProducerSettings<V77ApplicationProducerSettings>(configuration, V77ApplicationProducerSettings.Position, logger);
 
     /// <summary>
     /// Creates new <see cref="V77ApplicationProducer"/> and saves it to <see cref="_producers"/>.
@@ -746,7 +746,7 @@ public sealed partial class V77ApplicationProducerService(
             );
         }
 
-        string[] positionAndLineStrings = commitedOffsetString.Split(s_offsetValuesSeparator);
+        string[] positionAndLineStrings = commitedOffsetString.Split(OffsetValuesSeparator);
 
         if (positionAndLineStrings.Length < 2)
         {
@@ -773,7 +773,7 @@ public sealed partial class V77ApplicationProducerService(
     {
         await offsetService.CommitOffset(
             key: infobaseFullPath,
-            offset: position is not null ? $"{position}{s_offsetValuesSeparator}{lastReadLine}" : lastReadLine,
+            offset: position is not null ? $"{position}{OffsetValuesSeparator}{lastReadLine}" : lastReadLine,
             cancellationToken);
     }
 

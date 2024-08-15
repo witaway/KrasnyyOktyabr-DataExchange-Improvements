@@ -9,6 +9,9 @@ public class V77ApplicationProducerSettings : AbstractVApplicationProducerSettin
     [Required]
     public string InfobasePath { get; set; }
 
+    [Required]
+    public V77ApplicationObjectFilter[] ObjectFilters { get; set; }
+
 #nullable enable
     public string? ErtRelativePath { get; set; }
 }

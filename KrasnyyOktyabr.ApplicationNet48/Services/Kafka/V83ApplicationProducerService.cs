@@ -11,24 +11,51 @@ using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationProducerService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.HttpClientHelper;
+using Confluent.Kafka;
+using System.Text.RegularExpressions;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
 public sealed class V83ApplicationProducerService(
     IConfiguration configuration,
+    IJsonService jsonService,
     IOffsetService offsetService,
     IHttpClientFactory httpClientFactory,
+    IKafkaService kafkaService,
     ILogger<V83ApplicationProducerService> logger,
     ILoggerFactory loggerFactory)
     : IV83ApplicationProducerService
 {
-    public delegate ValueTask<string> GetLogTransactionsAsync(
+    public readonly struct LogTransaction(string date, string transaction, string content, string dataType)
+    {
+        public string Date { get; } = date;
+        public string Transaction { get; } = transaction;
+
+        public string Content { get; } = content;
+
+        public string DataType { get; } = dataType;
+    }
+
+    public static string LogTransactionTransactionJsonPropertyName => "#Транзакция";
+
+    public static string LogTransactionTransactionDateJsonPropertyName => "#ДатаТранзакции";
+
+    /// <returns>New transaction JSON.</returns>
+    public delegate ValueTask<LogTransaction?> GetNewLogTransactionAsync(
         V83ApplicationProducerSettings settings,
+        IJsonService jsonService,
         IOffsetService offsetService,
         IHttpClientFactory httpClientFactory,
         ILogger logger,
+        CancellationToken cancellationToken);
+
+    public delegate ValueTask SendObjectJsonAsync(
+        V83ApplicationProducerSettings settings,
+        LogTransaction logTransaction,
+        string messageKey,
+        IKafkaService kafkaService,
         CancellationToken cancellationToken);
 
     /// <summary>
@@ -46,7 +73,15 @@ public sealed class V83ApplicationProducerService(
     /// </summary>
     private readonly SemaphoreSlim _restartLock = new(1, 1);
 
+    public static readonly Regex InfobasePubNameRegex = new(@"/([^/]+)");
+
     public int ManagedInstancesCount => _producers?.Count ?? 0;
+
+    public static string NoNewTransactionsResponseContent => "null";
+
+    public static string V83ApplicationDateFormat => "yyyyMMdd";
+
+    private const char OffsetValuesSeparator = '&';
 
     public IStatusContainer<V83ApplicationProducerStatus> Status
     {
@@ -162,14 +197,111 @@ public sealed class V83ApplicationProducerService(
         logger.LogDisposed();
     }
 
-    public GetLogTransactionsAsync GetLogTransactionsTask => (
+    public GetNewLogTransactionAsync GetNewLogTransactionTask => async (
         V83ApplicationProducerSettings settings,
+        IJsonService jsonService,
         IOffsetService offsetService,
         IHttpClientFactory httpClientFactory,
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
-        throw new NotImplementedException(); // TODO: get log transactions
+        LogOffset offset = await GetCommitedOffset(offsetService, settings.InfobaseUrl, logger, cancellationToken);
+
+        using HttpClient httpClient = httpClientFactory.CreateClient();
+
+        HttpRequestMessage request = new(HttpMethod.Post, settings.InfobaseUrl)
+        {
+            Content = new StringContent(jsonService.Serialize(new V83ApplicationProducerNewTransactionRequest
+            {
+                ObjectFilters = settings.ObjectFilters
+                    .Select(f => new V83ApplicationProducerNewTransactionRequestObjectFilter
+                    {
+                        DataType = f.DataType,
+                        JsonDepth = f.JsonDepth,
+                    })
+                    .ToArray(),
+                TransactionTypeFilters = settings.TransactionTypeFilters,
+                TransactionToStartAfter = offset.Transaction,
+                StartDate = offset.Date,
+            }))
+        };
+
+        if (settings.Username is not null)
+        {
+            request.Headers.Authorization = GetAuthenticationHeaderValue(settings.Username, settings.Password);
+        }
+
+        // TODO: remove
+        string requestContent = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+
+        // Check response
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            string responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            throw new FailedToGetNewLogTransactionException(settings.InfobaseUrl, (int)response.StatusCode, responseContent);
+        }
+
+        string newTransactionJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+        if (newTransactionJson is null)
+        {
+            return null;
+        }
+
+        // Extract transaction data
+        Dictionary<string, string?> extractedValues = jsonService.ExtractProperties(
+            newTransactionJson,
+            [
+                LogTransactionTransactionJsonPropertyName,
+                LogTransactionTransactionDateJsonPropertyName,
+                settings.DataTypePropertyName
+            ]);
+
+        string? transaction = extractedValues[LogTransactionTransactionJsonPropertyName]
+            ?? throw new MissingLogTransactionPropertyException(LogTransactionTransactionJsonPropertyName);
+        string? transactionDate = extractedValues[LogTransactionTransactionDateJsonPropertyName]
+            ?? throw new MissingLogTransactionPropertyException(LogTransactionTransactionDateJsonPropertyName);
+        string? dataType = extractedValues[settings.DataTypePropertyName]
+            ?? throw new MissingLogTransactionPropertyException(settings.DataTypePropertyName);
+
+        return new LogTransaction(transactionDate, transaction, newTransactionJson, dataType);
+    };
+
+    public SendObjectJsonAsync SendObjectJsonTask = async (
+        V83ApplicationProducerSettings settings,
+        LogTransaction logTransaction,
+        string infobasePubName,
+        IKafkaService kafkaService,
+        CancellationToken cancellationToken) =>
+    {
+        // 1. Determine Kafka topic name
+
+        // 1.1 Determine if Kafka topic name was specified in settings
+        string? topicFromSettings = settings.ObjectFilters
+            .Where(f => logTransaction.DataType.StartsWith(f.DataType))
+            .Select(f => f.Topic)
+            .FirstOrDefault();
+
+        // 1.2 Use Kafka topic name from settings or generate
+        string topicName = topicFromSettings is not null
+            ? topicFromSettings
+            : kafkaService.BuildTopicName(infobasePubName, logTransaction.DataType);
+
+        // 2. Prepare Kafka message
+        Message<string, string> kafkaMessage = new()
+        {
+            Key = infobasePubName,
+            Value = logTransaction.Content,
+        };
+
+        using IProducer<string, string> producer = kafkaService.GetProducer<string, string>();
+
+        await producer.ProduceAsync(topicName, kafkaMessage, cancellationToken).ConfigureAwait(false);
+
+        logger.LogProducedMessage(topicName, kafkaMessage.Key, kafkaMessage.Value);
     };
 
     private void StartProducers()
@@ -194,7 +326,7 @@ public sealed class V83ApplicationProducerService(
     }
 
     private V83ApplicationProducerSettings[]? GetProducersSettings()
-        => ValidationHelper.GetAndValidateVApplicationKafkaClientSettings<V83ApplicationProducerSettings>(configuration, V83ApplicationProducerSettings.Position, logger);
+        => ValidationHelper.GetAndValidateVApplicationKafkaProducerSettings<V83ApplicationProducerSettings>(configuration, V83ApplicationProducerSettings.Position, logger);
 
     /// <summary>
     /// Creates new <see cref="V83ApplicationProducer"/> and saves it to <see cref="_producers"/>.
@@ -206,9 +338,12 @@ public sealed class V83ApplicationProducerService(
         V83ApplicationProducer producer = new(
             loggerFactory.CreateLogger<V83ApplicationProducer>(),
             settings,
+            jsonService,
             offsetService,
+            kafkaService,
             httpClientFactory,
-            GetLogTransactionsTask);
+            GetNewLogTransactionTask,
+            SendObjectJsonTask);
 
         _producers.Add(producer.Key, producer);
     }
@@ -237,11 +372,19 @@ public sealed class V83ApplicationProducerService(
 
         private readonly ILogger<V83ApplicationProducer> _logger;
 
+        private readonly string _infobasePubName;
+
+        private readonly IJsonService _jsonService;
+
         private readonly IOffsetService _offsetService;
+
+        private readonly IKafkaService _kafkaService;
 
         private readonly IHttpClientFactory _httpClientFactory;
 
-        private readonly GetLogTransactionsAsync _getLogTransactionsTask;
+        private readonly GetNewLogTransactionAsync _getNewLogTransactionTask;
+
+        private readonly SendObjectJsonAsync _sendObjectJsonTask;
 
         private readonly Task _producerTask;
 
@@ -253,23 +396,38 @@ public sealed class V83ApplicationProducerService(
         internal V83ApplicationProducer(
             ILogger<V83ApplicationProducer> logger,
             V83ApplicationProducerSettings settings,
+            IJsonService jsonService,
             IOffsetService offsetService,
+            IKafkaService kafkaService,
             IHttpClientFactory httpClientFactory,
-            GetLogTransactionsAsync getLogTransactionsTask)
+            GetNewLogTransactionAsync getLogTransactionsTask,
+            SendObjectJsonAsync sendObjectJsonTask)
         {
             _logger = logger;
             Settings = settings;
+            _jsonService = jsonService;
             _offsetService = offsetService;
+            _kafkaService = kafkaService;
             _httpClientFactory = httpClientFactory;
 
             _cancellationTokenSource = new();
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
-            _getLogTransactionsTask = getLogTransactionsTask;
+            _getNewLogTransactionTask = getLogTransactionsTask;
+            _sendObjectJsonTask = sendObjectJsonTask;
             _producerTask = Task.Run(() => RunProducerAsync(cancellationToken), cancellationToken);
 
             // Prepare cached values
-            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.IdPrefix, f.JsonDepth, f.Topic)).ToList().AsReadOnly();
+            CacheObjectFiltersList = Settings.ObjectFilters.Select(f => new ObjectFilter(f.DataType, f.JsonDepth, f.Topic)).ToList().AsReadOnly();
+
+            // Extract infobase publication name
+            MatchCollection matches = InfobasePubNameRegex.Matches(settings.InfobaseUrl);
+            _infobasePubName = matches[1].Groups[1].Value;
+
+            if (_infobasePubName.Length == 0)
+            {
+                throw new ArgumentException($"Empty infobase pub name: {settings.InfobaseUrl}");
+            }
 
             LastActivity = DateTimeOffset.Now;
         }
@@ -311,20 +469,41 @@ public sealed class V83ApplicationProducerService(
                         await WaitPeriodsEndAsync(() => DateTimeOffset.Now, Settings.SuspendSchedule, cancellationToken, _logger);
                     }
 
-                    _logger.LogRequestInfobaseChanges(Key);
+                    _logger.LogRequestNewLogTransactions(Key);
 
-                    string changes = await _getLogTransactionsTask(
+                    LogTransaction? newLogTransaction = await _getNewLogTransactionTask(
                         Settings,
+                        _jsonService,
                         _offsetService,
                         _httpClientFactory,
                         _logger,
-                        cancellationToken);
+                        cancellationToken)
+                        .ConfigureAwait(false);
 
                     LastActivity = DateTimeOffset.Now;
 
-                    // TODO: process changes
+                    if (newLogTransaction is not null)
+                    {
+                        await _sendObjectJsonTask(
+                            Settings,
+                            newLogTransaction.Value,
+                            _infobasePubName,
+                            _kafkaService,
+                            cancellationToken)
+                            .ConfigureAwait(false);
 
-                    await Task.Delay(RequestInterval, cancellationToken).ConfigureAwait(false);
+                        await CommitOffset(
+                            _offsetService,
+                            infobaseUrl: Settings.InfobaseUrl,
+                            date: newLogTransaction.Value.Date,
+                            transaction: newLogTransaction.Value.Transaction,
+                            cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await Task.Delay(RequestInterval, cancellationToken).ConfigureAwait(false);
+                    }
                 }
             }
             catch (OperationCanceledException)
@@ -359,6 +538,72 @@ public sealed class V83ApplicationProducerService(
             }
 
             _logger.LogDisposed(Key);
+        }
+    }
+
+    internal readonly struct LogOffset(string date, string? transaction)
+    {
+        public string Date { get; } = date;
+
+        public string? Transaction { get; } = transaction;
+    }
+
+    private static async Task<LogOffset> GetCommitedOffset(IOffsetService offsetService, string infobaseUrl, ILogger logger, CancellationToken cancellationToken)
+    {
+        string? commitedOffsetString = await offsetService.GetOffset(infobaseUrl, cancellationToken).ConfigureAwait(false);
+
+        if (commitedOffsetString is null)
+        {
+            return new(
+                date: DateTime.Now.ToString(V83ApplicationDateFormat),
+                transaction: null
+            );
+        }
+
+        string[] dateAndTransactionStrings = commitedOffsetString.Split(OffsetValuesSeparator);
+
+        if (dateAndTransactionStrings.Length < 2)
+        {
+            logger.LogOffsetInvalidFormat(commitedOffsetString);
+
+            return new(
+                date: DateTime.Now.ToString(V83ApplicationDateFormat),
+                transaction: commitedOffsetString
+            );
+        }
+
+        return new(
+            date: dateAndTransactionStrings[0],
+            transaction: dateAndTransactionStrings[1]
+        );
+    }
+
+    private static async Task CommitOffset(
+        IOffsetService offsetService,
+        string infobaseUrl,
+        string date,
+        string transaction,
+        CancellationToken cancellationToken)
+    {
+        await offsetService.CommitOffset(
+            key: infobaseUrl,
+            offset: $"{date}{OffsetValuesSeparator}{transaction}",
+            cancellationToken);
+    }
+
+    public class FailedToGetNewLogTransactionException : Exception
+    {
+        internal FailedToGetNewLogTransactionException(string infobaseUrl, int statusCode, string responseContent)
+            : base($"Failed to get new log transaction from '{infobaseUrl}' (code - {statusCode}): {responseContent}")
+        {
+        }
+    }
+
+    public class MissingLogTransactionPropertyException : Exception
+    {
+        internal MissingLogTransactionPropertyException(string propertyName)
+            : base($"Missing transaction property '{propertyName}'")
+        {
         }
     }
 }

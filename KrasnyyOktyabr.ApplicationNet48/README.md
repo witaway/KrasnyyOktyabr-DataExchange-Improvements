@@ -81,11 +81,11 @@ Example:
 Properties:
 
 1. `InfobasePath` - absolute path to 1C7 infobase.
-1. `Username` - infobase user name.
-1. `Password` - infobase user password.
 1. `DataTypePropertyName` - data type property name at JSONs extracted by `ErtRelativePath`.
 1. `ObjectFilters` - object filters.
 1. `TransactionTypeFilters` - transaction types filters.
+1. (_optional_) `Username` - infobase user name.
+1. (_optional_) `Password` - infobase user password.
 1. (_optional_) `ObjectFilters.Topic` - topic name (by default is generated like `<infobaseName>_<dataType>`).
 1. (_optional_) `ErtRelativePath` - path of the ERT to be called to retrieve __object JSONs__ relative to `InfobasePath` (be default _"ExtForms\EDO\Test\UN_JSON_Synch.ert"_).
 1. (_optional_) `SuspendSchedule` - periods when producer have to suspend.
@@ -110,7 +110,7 @@ Example:
   "DataTypePropertyName": "T",
   "ObjectFilters": [
     {
-      "IdPrefix": "O/9999/",
+      "DataType": "Document.TestDocument",
       "JsonDepth": 3,
       "Topic": "Topic1"
     }
@@ -130,11 +130,11 @@ Example:
 Properties:
 
 1. `InfobaseUrl` - 1C8 infobase HTTP-service endpoint for getting data.
-1. `Username` - infobase user name.
-1. `Password` - infobase user password.
 1. `DataTypePropertyName` - data type property name at JSONs from `InfobaseUrl` response.
 1. `ObjectFilters` - object filters.
 1. `TransactionTypeFilters` - transaction types filters.
+1. (_optional_) `Username` - infobase user name.
+1. (_optional_) `Password` - infobase user password.
 1. (_optional_) `ObjectFilters.Topic` - topic name (by default is generated like `<infobaseName>_<dataType>`).
 1. (_optional_) `SuspendSchedule` - periods when producer have to suspend. 
 

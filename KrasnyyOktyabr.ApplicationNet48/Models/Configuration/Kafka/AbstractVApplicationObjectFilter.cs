@@ -2,11 +2,8 @@
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 
-public class VApplicationObjectFilter
+public abstract class AbstractVApplicationObjectFilter
 {
-    [Required]
-    public string IdPrefix { get; set; }
-
     [Range(1, int.MaxValue, ErrorMessage = "Only natural numbers allowed")]
     public int JsonDepth { get; set; }
 

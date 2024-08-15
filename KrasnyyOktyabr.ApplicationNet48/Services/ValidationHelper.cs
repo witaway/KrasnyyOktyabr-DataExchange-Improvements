@@ -60,7 +60,12 @@ public static class ValidationHelper
         return null;
     }
 
-    public static TSettings[]? GetAndValidateVApplicationKafkaClientSettings<TSettings>(IConfiguration configuration, string section, ILogger logger) where TSettings : AbstractVApplicationProducerSettings
+    /// <summary>
+    /// Runs <see cref="GetAndValidateKafkaClientSettings"/> and then validates
+    /// <see cref="V77ApplicationProducerSettings.ObjectFilters"/> or
+    /// <see cref="V83ApplicationProducerSettings.ObjectFilters"/>.
+    /// </summary>
+    public static TSettings[]? GetAndValidateVApplicationKafkaProducerSettings<TSettings>(IConfiguration configuration, string section, ILogger logger) where TSettings : AbstractVApplicationProducerSettings
     {
         TSettings[]? clientsSettings = GetAndValidateKafkaClientSettings<TSettings>(configuration, section, logger);
 
@@ -73,9 +78,22 @@ public static class ValidationHelper
         {
             foreach (TSettings clientSettings in clientsSettings)
             {
-                foreach (VApplicationObjectFilter objectFilter in clientSettings.ObjectFilters)
+                // V77ApplicationProducerSettings
+                if (clientsSettings is V77ApplicationProducerSettings v77ApplicationProducerSettings)
                 {
-                    ValidateObject(objectFilter);
+                    foreach (V77ApplicationObjectFilter objectFilter in v77ApplicationProducerSettings.ObjectFilters)
+                    {
+                        ValidateObject(objectFilter);
+                    }
+                }
+
+                // V83ApplicationProducerSettings
+                if (clientsSettings is V83ApplicationProducerSettings v83ApplicationProducerSettings)
+                {
+                    foreach (V83ApplicationObjectFilter objectFilter in v83ApplicationProducerSettings.ObjectFilters)
+                    {
+                        ValidateObject(objectFilter);
+                    }
                 }
             }
 

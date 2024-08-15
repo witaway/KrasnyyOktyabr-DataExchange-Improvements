@@ -35,7 +35,32 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
         return instructionsCount;
     }
 
+    public string Serialize(object item)
+    {
+        JsonSerializer serializer = JsonSerializer.CreateDefault();
+
+        using TextWriter writer = new StringWriter();
+
+        serializer.Serialize(writer, item);
+        return writer.ToString();
+    }
+
 #nullable enable
+    public Dictionary<string, string?> ExtractProperties(string json, IEnumerable<string> propertyNames)
+    {
+        JToken jToken = JToken.Parse(json);
+
+        Dictionary<string, string?> extractedValues = [];
+
+        foreach (string propertyName in propertyNames)
+        {
+            string? extractedValue = jToken[propertyName]?.ToString();
+            extractedValues[propertyName] = extractedValue;
+        }
+
+        return extractedValues;
+    }
+
     public KafkaProducerMessageData BuildKafkaProducerMessageData(
         string objectJson,
         Dictionary<string, object?> propertiesToAdd,

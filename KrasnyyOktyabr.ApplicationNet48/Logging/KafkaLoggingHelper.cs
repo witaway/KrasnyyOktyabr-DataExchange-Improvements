@@ -81,9 +81,9 @@ public static class KafkaLoggingHelper
         logger.LogTrace("Invalid offset format: '{Offset}'", offset);
     }
 
-    public static void LogRequestInfobaseChanges(this ILogger logger, string key)
+    public static void LogRequestNewLogTransactions(this ILogger logger, string key)
     {
-        logger.LogTrace("Request infobase '{Key}' changes", key);
+        logger.LogTrace("Request '{Key}' for new log transactions", key);
     }
 
     public static void LogGettingNewTransactions(this ILogger logger, string key)

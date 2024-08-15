@@ -19,7 +19,7 @@ public class HttpDataResolver(HttpClient httpClient, HttpRequestMessage request)
     {
         HttpResponseMessage response = await _httpClient.SendAsync(_request, cancellationToken).ConfigureAwait(false);
 
-        string responseContent = await response.Content.ReadAsStringAsync();
+        string responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         try
         {

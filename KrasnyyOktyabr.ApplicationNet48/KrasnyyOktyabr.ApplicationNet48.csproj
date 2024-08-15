@@ -294,14 +294,16 @@
     <Compile Include="Models\Configuration\Kafka\AbstractConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractSuspendableSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationConsumerSettings.cs" />
+    <Compile Include="Models\Configuration\Kafka\AbstractVApplicationObjectFilter.cs" />
     <Compile Include="Models\Configuration\Kafka\AbstractVApplicationProducerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\KafkaSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\MsSqlConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V77ApplicationConsumerSettings.cs" />
+    <Compile Include="Models\Configuration\Kafka\V83ApplicationObjectFilter.cs" />
     <Compile Include="Models\Configuration\Kafka\V77ApplicationProducerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V83ApplicationConsumerSettings.cs" />
     <Compile Include="Models\Configuration\Kafka\V83ApplicationProducerSettings.cs" />
-    <Compile Include="Models\Configuration\Kafka\VApplicationObjectFilter.cs" />
+    <Compile Include="Models\Configuration\Kafka\V77ApplicationObjectFilter.cs" />
     <Compile Include="Models\Configuration\TimePeriod.cs" />
     <Compile Include="Models\Health\ComV77ApplicationConnectionHealthStatus.cs" />
     <Compile Include="Models\Health\LegacyConsumerHealthStatus.cs" />
@@ -318,7 +320,9 @@
     <Compile Include="Models\Kafka\V77ApplicationPeriodProduceJobRequest.cs" />
     <Compile Include="Models\Kafka\V77ApplicationPeriodProduceJobStatus.cs" />
     <Compile Include="Models\Kafka\V77ApplicationProducerStatus.cs" />
+    <Compile Include="Models\Kafka\V83ApplicationProducerNewTransactionRequest.cs" />
     <Compile Include="Models\Kafka\V83ApplicationConsumerStatus.cs" />
+    <Compile Include="Models\Kafka\V83ApplicationProducerNewTransactionRequestObjectFilter.cs" />
     <Compile Include="Models\Kafka\V83ApplicationProducerStatus.cs" />
     <Compile Include="Models\RestartResult.cs" />
     <Compile Include="Models\V77ApplicationResolverRequest.cs" />

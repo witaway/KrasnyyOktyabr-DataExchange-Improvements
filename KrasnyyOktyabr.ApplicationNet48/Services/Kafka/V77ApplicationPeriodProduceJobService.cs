@@ -55,7 +55,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
         IKafkaService kafkaService,
         CancellationToken cancellationToken);
 
-    private static int LogTransactionChunkSize => 10;
+    private const int LogTransactionChunkSize = 10;
 
     public List<V77ApplicationPeriodProduceJobStatus> Status
     {
@@ -97,7 +97,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
         logger.LogGettingTransactionsForPeriod(infobaseFullPath, request.Start, request.Start + request.Duration);
 
         TransactionFilter filter = new(
-            objectIds: objectFilters.Select(f => f.Id).ToArray(),
+            objectIds: objectFilters.Select(f => f.Name).ToArray(),
             transactionTypes: request.TransactionTypeFilters
         );
 
@@ -145,7 +145,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
             foreach (string objectId in objectIds)
             {
                 int depth = objectFilters
-                .Where(f => objectId.StartsWith(f.Id))
+                .Where(f => objectId.StartsWith(f.Name))
                 .Select(f => f.Depth)
                 .FirstOrDefault();
 
@@ -208,9 +208,9 @@ public sealed class V77ApplicationPeriodProduceJobService(
             };
 
             string? topicFromSettings = request.ObjectFilters
-            .Where(f => logTransactionObjectJson.Item1.ObjectId.StartsWith(f.Id))
-            .Select(f => f.Topic)
-            .FirstOrDefault();
+                .Where(f => logTransactionObjectJson.Item1.ObjectId.StartsWith(f.Name))
+                .Select(f => f.Topic)
+                .FirstOrDefault();
 
             KafkaProducerMessageData messageData = topicFromSettings is null
                 ? jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd, request.DataTypePropertyName)

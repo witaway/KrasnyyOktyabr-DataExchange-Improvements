@@ -8,4 +8,7 @@ public class V83ApplicationProducerSettings : AbstractVApplicationProducerSettin
 
     [Required]
     public string InfobaseUrl { get; set; }
+
+    [Required]
+    public V83ApplicationObjectFilter[] ObjectFilters { get; set; }
 }

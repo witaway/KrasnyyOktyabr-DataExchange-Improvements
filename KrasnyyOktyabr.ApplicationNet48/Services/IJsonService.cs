@@ -29,6 +29,16 @@ public interface IJsonService
     int ClearCachedExpressions();
 
     /// <summary>
+    /// Works with <see cref="Newtonsoft.Json.JsonPropertyAttribute"/>.
+    /// </summary>
+    string Serialize(object item);
+
+    /// <remarks>
+    /// Uses <c>null</c> when property is not present.
+    /// </remarks>
+    Dictionary<string, string?> ExtractProperties(string json, IEnumerable<string> propertyNames); 
+
+    /// <summary>
     /// Remove empty properties using <see cref="JsonTransform.JsonHelper"/>,
     /// add properties from <paramref name="propertiesToAdd"/>
     /// and extract property with name <paramref name="dataTypePropertyName"/>.

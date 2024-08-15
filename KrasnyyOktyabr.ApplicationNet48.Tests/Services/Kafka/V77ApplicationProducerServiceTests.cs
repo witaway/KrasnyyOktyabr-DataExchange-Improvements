@@ -55,12 +55,12 @@ public class V77ApplicationProducerServiceTests
         Username = "TestUser",
         Password = "TestPassword",
         ObjectFilters = [
-            new VApplicationObjectFilter()
+            new V77ApplicationObjectFilter()
             {
                 IdPrefix = "Id1",
                 JsonDepth = 3
             },
-            new VApplicationObjectFilter()
+            new V77ApplicationObjectFilter()
             {
                 IdPrefix = "Id2",
                 JsonDepth = 2
@@ -122,12 +122,12 @@ public class V77ApplicationProducerServiceTests
         V77ApplicationProducerSettings settings = TestSettings;
         LogTransaction[] logTransactions = TestLogTransactions;
 
-        VApplicationObjectFilter objectFilter = new()
+        V77ApplicationObjectFilter objectFilter = new()
         {
             IdPrefix = "Id1",
             JsonDepth = 3
         };
-        List<VApplicationObjectFilter> objectFilters = [objectFilter];
+        List<V77ApplicationObjectFilter> objectFilters = [objectFilter];
 
         // Setting up connection mock
         Mock<IComV77ApplicationConnection> connectionMock = new();
