@@ -31,6 +31,7 @@ public sealed class V83ApplicationProducerService(
     public readonly struct LogTransaction(string date, string transaction, string content, string dataType)
     {
         public string Date { get; } = date;
+
         public string Transaction { get; } = transaction;
 
         public string Content { get; } = content;
@@ -246,7 +247,7 @@ public sealed class V83ApplicationProducerService(
 
         string newTransactionJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        if (newTransactionJson is null)
+        if (newTransactionJson == NoNewTransactionsResponseContent)
         {
             return null;
         }
