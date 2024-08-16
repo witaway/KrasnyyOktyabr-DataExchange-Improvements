@@ -28,23 +28,29 @@ public sealed class V83ApplicationProducerService(
     ILoggerFactory loggerFactory)
     : IV83ApplicationProducerService
 {
-    public readonly struct LogTransaction(string date, string transaction, string content, string dataType)
+    public readonly struct NewLogTransactionResponse(string nextDate, string? transaction, string? previousTransaction, string data, string? dataType)
     {
-        public string Date { get; } = date;
+        public string NextDate { get; } = nextDate;
 
-        public string Transaction { get; } = transaction;
+        public string? Transaction { get; } = transaction;
 
-        public string Content { get; } = content;
+        public string? PreviousTransaction { get; } = previousTransaction;
 
-        public string DataType { get; } = dataType;
+        public string Data { get; } = data;
+
+        public string? DataType { get; } = dataType;
     }
 
-    public static string LogTransactionTransactionJsonPropertyName => "#Транзакция";
+    public static string LogTransactionNextDateJsonPropertyName => "nextdate";
 
-    public static string LogTransactionTransactionDateJsonPropertyName => "#ДатаТранзакции";
+    public static string LogTransactionTransactionJsonPropertyName => "transaction";
+
+    public static string LogTransactionDataTypeJsonPropertyName => "datatype";
+
+    public static string LogTransactionDataJsonPropertyName => "data";
 
     /// <returns>New transaction JSON.</returns>
-    public delegate ValueTask<LogTransaction?> GetNewLogTransactionAsync(
+    public delegate ValueTask<NewLogTransactionResponse> GetNewLogTransactionAsync(
         V83ApplicationProducerSettings settings,
         IJsonService jsonService,
         IOffsetService offsetService,
@@ -54,7 +60,7 @@ public sealed class V83ApplicationProducerService(
 
     public delegate ValueTask SendObjectJsonAsync(
         V83ApplicationProducerSettings settings,
-        LogTransaction logTransaction,
+        NewLogTransactionResponse logTransaction,
         string messageKey,
         IKafkaService kafkaService,
         CancellationToken cancellationToken);
@@ -232,9 +238,6 @@ public sealed class V83ApplicationProducerService(
             request.Headers.Authorization = GetAuthenticationHeaderValue(settings.Username, settings.Password);
         }
 
-        // TODO: remove
-        string requestContent = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
-
         HttpResponseMessage response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
         // Check response
@@ -247,33 +250,28 @@ public sealed class V83ApplicationProducerService(
 
         string newTransactionJson = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-        if (newTransactionJson == NoNewTransactionsResponseContent)
-        {
-            return null;
-        }
-
         // Extract transaction data
         Dictionary<string, string?> extractedValues = jsonService.ExtractProperties(
             newTransactionJson,
             [
+                LogTransactionNextDateJsonPropertyName,
                 LogTransactionTransactionJsonPropertyName,
-                LogTransactionTransactionDateJsonPropertyName,
-                settings.DataTypePropertyName
+                LogTransactionDataTypeJsonPropertyName,
+                LogTransactionDataJsonPropertyName
             ]);
 
-        string? transaction = extractedValues[LogTransactionTransactionJsonPropertyName]
-            ?? throw new MissingLogTransactionPropertyException(LogTransactionTransactionJsonPropertyName);
-        string? transactionDate = extractedValues[LogTransactionTransactionDateJsonPropertyName]
-            ?? throw new MissingLogTransactionPropertyException(LogTransactionTransactionDateJsonPropertyName);
-        string? dataType = extractedValues[settings.DataTypePropertyName]
-            ?? throw new MissingLogTransactionPropertyException(settings.DataTypePropertyName);
+        string nextDate = extractedValues[LogTransactionNextDateJsonPropertyName]
+            ?? throw new MissingLogTransactionPropertyException(LogTransactionNextDateJsonPropertyName);
+        string? transaction = extractedValues[LogTransactionTransactionJsonPropertyName];
+        string? dataType = extractedValues[LogTransactionDataTypeJsonPropertyName];
+        string? data = extractedValues[LogTransactionDataJsonPropertyName];
 
-        return new LogTransaction(transactionDate, transaction, newTransactionJson, dataType);
+        return new NewLogTransactionResponse(nextDate, transaction, offset.Transaction, newTransactionJson, dataType);
     };
 
     public SendObjectJsonAsync SendObjectJsonTask = async (
         V83ApplicationProducerSettings settings,
-        LogTransaction logTransaction,
+        NewLogTransactionResponse logTransaction,
         string infobasePubName,
         IKafkaService kafkaService,
         CancellationToken cancellationToken) =>
@@ -282,7 +280,7 @@ public sealed class V83ApplicationProducerService(
 
         // 1.1 Determine if Kafka topic name was specified in settings
         string? topicFromSettings = settings.ObjectFilters
-            .Where(f => logTransaction.DataType.StartsWith(f.DataType))
+            .Where(f => logTransaction.DataType!.StartsWith(f.DataType))
             .Select(f => f.Topic)
             .FirstOrDefault();
 
@@ -295,7 +293,7 @@ public sealed class V83ApplicationProducerService(
         Message<string, string> kafkaMessage = new()
         {
             Key = infobasePubName,
-            Value = logTransaction.Content,
+            Value = logTransaction.Data,
         };
 
         using IProducer<string, string> producer = kafkaService.GetProducer<string, string>();
@@ -472,7 +470,7 @@ public sealed class V83ApplicationProducerService(
 
                     _logger.LogRequestNewLogTransactions(Key);
 
-                    LogTransaction? newLogTransaction = await _getNewLogTransactionTask(
+                    NewLogTransactionResponse newLogTransaction = await _getNewLogTransactionTask(
                         Settings,
                         _jsonService,
                         _offsetService,
@@ -483,25 +481,30 @@ public sealed class V83ApplicationProducerService(
 
                     LastActivity = DateTimeOffset.Now;
 
-                    if (newLogTransaction is not null)
+                    bool isLogTransactionPresent = newLogTransaction.Transaction is not null
+                        && newLogTransaction.Transaction is not null
+                        && newLogTransaction.DataType is not null;
+
+                    if (isLogTransactionPresent)
                     {
                         await _sendObjectJsonTask(
                             Settings,
-                            newLogTransaction.Value,
+                            newLogTransaction,
                             _infobasePubName,
                             _kafkaService,
                             cancellationToken)
                             .ConfigureAwait(false);
-
-                        await CommitOffset(
-                            _offsetService,
-                            infobaseUrl: Settings.InfobaseUrl,
-                            date: newLogTransaction.Value.Date,
-                            transaction: newLogTransaction.Value.Transaction,
-                            cancellationToken)
-                            .ConfigureAwait(false);
                     }
-                    else
+
+                    await CommitOffset(
+                        _offsetService,
+                        infobaseUrl: Settings.InfobaseUrl,
+                        nextDate: newLogTransaction.NextDate,
+                        transaction: newLogTransaction.Transaction is not null ? newLogTransaction.Transaction : newLogTransaction.PreviousTransaction,
+                        cancellationToken)
+                        .ConfigureAwait(false);
+
+                    if (!isLogTransactionPresent)
                     {
                         await Task.Delay(RequestInterval, cancellationToken).ConfigureAwait(false);
                     }
@@ -582,13 +585,13 @@ public sealed class V83ApplicationProducerService(
     private static async Task CommitOffset(
         IOffsetService offsetService,
         string infobaseUrl,
-        string date,
-        string transaction,
+        string nextDate,
+        string? transaction,
         CancellationToken cancellationToken)
     {
         await offsetService.CommitOffset(
             key: infobaseUrl,
-            offset: $"{date}{OffsetValuesSeparator}{transaction}",
+            offset: $"{nextDate}{OffsetValuesSeparator}{transaction}",
             cancellationToken);
     }
 

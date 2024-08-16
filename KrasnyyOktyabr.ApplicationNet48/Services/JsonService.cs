@@ -54,7 +54,10 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
 
         foreach (string propertyName in propertyNames)
         {
-            string? extractedValue = jToken[propertyName]?.ToString();
+            string? extractedValue = jToken[propertyName]?.Type == JTokenType.Null
+                ? null
+                : jToken[propertyName]?.ToString();
+
             extractedValues[propertyName] = extractedValue;
         }
 
