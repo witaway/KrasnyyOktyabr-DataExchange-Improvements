@@ -297,7 +297,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         private readonly TransformMessageAsync _transformMessageTask;
 
-        private readonly V83ApplicationSaveAsync _v77ApplicationSaveTask;
+        private readonly V83ApplicationSaveAsync _v83ApplicationSaveTask;
 
         private readonly Task _consumerTask;
 
@@ -314,7 +314,7 @@ public sealed partial class V83ApplicationConsumerService(
             IHttpClientFactory httpClientFactory,
             ITransliterationService transliterationService,
             TransformMessageAsync transformMessageTask,
-            V83ApplicationSaveAsync v77ApplicationSaveTask)
+            V83ApplicationSaveAsync v83ApplicationSaveTask)
         {
             _logger = logger;
             Settings = settings;
@@ -339,7 +339,7 @@ public sealed partial class V83ApplicationConsumerService(
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             _transformMessageTask = transformMessageTask;
-            _v77ApplicationSaveTask = v77ApplicationSaveTask;
+            _v83ApplicationSaveTask = v83ApplicationSaveTask;
             _consumerTask = Task.Run(() => RunConsumerAsync(cancellationToken), cancellationToken);
 
             LastActivity = DateTimeOffset.Now;
@@ -414,7 +414,7 @@ public sealed partial class V83ApplicationConsumerService(
                         continue;
                     }
 
-                    await _v77ApplicationSaveTask(
+                    await _v83ApplicationSaveTask(
                         jsonTransformResults,
                         Settings,
                         _httpClientFactory,
