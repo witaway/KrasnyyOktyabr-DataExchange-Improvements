@@ -87,7 +87,7 @@ Properties:
 1. (_optional_) `Username` - infobase user name.
 1. (_optional_) `Password` - infobase user password.
 1. (_optional_) `ObjectFilters.Topic` - topic name (by default is generated like `<infobaseName>_<dataType>`).
-1. (_optional_) `ErtRelativePath` - path of the ERT to be called to retrieve __object JSONs__ relative to `InfobasePath` (be default _"ExtForms\EDO\Test\UN_JSON_Synch.ert"_).
+1. (_optional_) `ErtRelativePath` - path of the ERT to be called to retrieve __object JSONs__ relative to `InfobasePath` (be default _"ExtForms\EDO\Test\GetObjectJson.ert"_).
 1. (_optional_) `SuspendSchedule` - periods when producer have to suspend.
 
 
@@ -176,7 +176,7 @@ Properties:
 1. `Username` - infobase user name.
 1. `Password` - infobase user password.
 1. `TopicsInstructions` - _topic names_ -> names of _instructions_ stored in `Properties/ConsumerInstructions` directory.
-1. (_optional_) `ErtRelativePath` - path of the ERT to be called to save `JsonTransform` results to infobase relative to `InfobasePath`  (be default _"ExtForms\EDO\Test\SaveObject.ert"_).
+1. (_optional_) `ErtRelativePath` - path of the ERT to be called to save `JsonTransform` results to infobase relative to `InfobasePath`  (be default _"ExtForms\EDO\Test\SaveObjectFromJson.ert"_).
 1. (_optional_) `ConsumerGroup` - consumer group (__infobase directory name__ by default).
 1. (_optional_) `SuspendSchedule` - periods when consumer have to suspend. 
 
