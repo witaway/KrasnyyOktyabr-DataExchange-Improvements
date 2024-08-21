@@ -6,7 +6,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Linq;
 /// <summary>
 /// See <see cref="https://github.com/dotnet/runtime/blob/5535e31a712343a63f5d7d796cd874e563e5ac14/src/libraries/System.Linq/src/System/Linq/Chunk.cs#L40C13-L50C48">Chunk.cs</see>.
 /// </summary>
-public static partial class Enumerable
+public static partial class  Enumerable
 {
     /// <exception cref="ArgumentNullException"/>
     /// <exception cref="ArgumentOutOfRangeException"/>
