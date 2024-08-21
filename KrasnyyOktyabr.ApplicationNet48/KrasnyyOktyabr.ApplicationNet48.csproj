@@ -313,12 +313,13 @@
     <Compile Include="Models\Kafka\V83ApplicationProducerStatus.cs" />
     <Compile Include="Models\RestartResult.cs" />
     <Compile Include="Models\V77ApplicationResolverRequest.cs" />
+    <Compile Include="Modules\API\Attributes\ApiRoutePrefixAttribute.cs" />
     <Compile Include="Modules\API\Controllers\Health\HealthController.cs" />
     <Compile Include="Modules\API\Controllers\JsonTransform\JsonTransformController.cs" />
     <Compile Include="Modules\API\Controllers\Kafka\KafkaController.cs" />
+    <Compile Include="Modules\API\Controllers\Resolvers\ResolveController.cs" />
     <Compile Include="Modules\API\Controllers\Restart\RestartController.cs" />
-    <Compile Include="Modules\API\Controllers\V77Application\V77ApplicationPeriodProduceJobController.cs" />
-    <Compile Include="Modules\API\Controllers\V77Application\V77ApplicationResolverController.cs" />
+    <Compile Include="Modules\API\Controllers\Producers\ProducersController.cs" />
     <Compile Include="Modules\API\Filters\ValidateModelAttribute.cs" />
     <Compile Include="Modules\API\Helpers\ControllersHelper.cs" />
     <Compile Include="Modules\DataResolver\DataResolveService.cs" />
@@ -385,9 +386,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Common\" />
-    <Folder Include="Modules\API\Controllers\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KrasnyyOktyabr.ComV77Application\KrasnyyOktyabr.ComV77Application.csproj">

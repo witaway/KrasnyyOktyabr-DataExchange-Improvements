@@ -11,14 +11,17 @@ using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
+using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
 using KrasnyyOktyabr.ApplicationNet48.Services;
 using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
+[ApiRoutePrefix("jsontransform")]
 public class JsonTransformController(IScriptingService scriptingService, ILogger<JsonTransformController> logger) : ApiController
 {
     [HttpPost]
+    [Route("run", Name = "ExecuteJsonTransform")]
     public async Task<IHttpActionResult> Run(HttpRequestMessage request, HttpResponseMessage response, CancellationToken cancellationToken)
     {
         MemoryStream resultStream = new();

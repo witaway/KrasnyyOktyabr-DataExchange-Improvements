@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Logging;
+using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Controllers.ControllersHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
-[RoutePrefix("api/kafka")]
+[ApiRoutePrefix("kafka")]
 public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController> logger) : ApiController
 {
-    [Route("produce")]
     [HttpPost]
+    [Route("produce", Name = "ProduceKafkaMessage")]
     public async Task<IHttpActionResult> ProduceMessage(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         try

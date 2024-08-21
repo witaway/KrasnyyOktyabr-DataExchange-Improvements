@@ -2,35 +2,35 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
-[RoutePrefix("api/producers/v77application/jobs")]
-public class V77ApplicationPeriodProduceJobController(IV77ApplicationPeriodProduceJobService service, ILogger<V77ApplicationPeriodProduceJobController> logger) : ApiController
+
+[ApiRoutePrefix("producers")]
+public class ProducersController(IV77ApplicationPeriodProduceJobService service, ILogger<ProducersController> logger) : ApiController
 {
-    [Route("start")]
     [HttpPost]
-    public IHttpActionResult StartJob([FromBody] V77ApplicationPeriodProduceJobRequest request)
+    [Route("v77application/jobs/start", Name = "StartV77ApplicationPeriodJob")]
+    public IHttpActionResult StartV77ApplicationPeriodJob([FromBody] V77ApplicationPeriodProduceJobRequest request)
     {
         try
         {
             service.StartJob(request);
-
             return Ok();
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to start period produce job");
-
             return BadRequest(ex.Message);
         }
     }
 
-    [Route("cancel")]
     [HttpPost]
-    public async Task<IHttpActionResult> CancelJob([FromUri] string infobasePath)
+    [Route("v77application/jobs/cancel", Name = "CancelV77ApplicationPeriodJob")]
+    public async Task<IHttpActionResult> CancelV77ApplicationPeriodJob([FromUri] string infobasePath)
     {
         await service.CancelJobAsync(infobasePath);
 

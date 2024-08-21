@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using KrasnyyOktyabr.ApplicationNet48.Health;
 using KrasnyyOktyabr.ApplicationNet48.Models.Health;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
 using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
@@ -17,6 +18,9 @@ namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
 public class HealthController(HealthCheckService healthCheckService) : ApiController
 {
+    [HttpGet]
+    [Route("HealthService.svc/Status", Name = "LegacyHealth")]
+    [Route("api/health", Name = "Health")]
     public async Task<IHttpActionResult> GetHealthStatus(CancellationToken cancellationToken)
     {
         HealthReport healthReport = await healthCheckService.CheckHealthAsync(cancellationToken);
