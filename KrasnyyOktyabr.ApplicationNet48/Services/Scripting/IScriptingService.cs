@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services;
 
-public interface IJsonService
+public interface IScriptingService
 {
     public readonly struct JsonTransformMsSqlResult(string table, Dictionary<string, dynamic> columnValues)
     {

@@ -20,7 +20,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
 public sealed partial class V83ApplicationConsumerService(
     IConfiguration configuration,
-    IJsonService jsonService,
+    IScriptingService scriptingService,
     IHttpClientFactory httpClientFactory,
     IKafkaService kafkaService,
     ITransliterationService transliterationService,
@@ -32,7 +32,7 @@ public sealed partial class V83ApplicationConsumerService(
         string topic,
         string message,
         V83ApplicationConsumerSettings settings,
-        IJsonService jsonService,
+        IScriptingService scriptingService,
         ILogger logger,
         CancellationToken cancellationToken);
 
@@ -179,7 +179,7 @@ public sealed partial class V83ApplicationConsumerService(
         string topic,
         string message,
         V83ApplicationConsumerSettings settings,
-        IJsonService jsonService,
+        IScriptingService jsonService,
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
@@ -258,7 +258,7 @@ public sealed partial class V83ApplicationConsumerService(
             loggerFactory.CreateLogger<V83ApplicationConsumer>(),
             settings,
             kafkaService,
-            jsonService,
+            scriptingService,
             httpClientFactory,
             transliterationService,
             TransformMessageTask,
@@ -291,7 +291,7 @@ public sealed partial class V83ApplicationConsumerService(
 
         private readonly IKafkaService _kafkaService;
 
-        private readonly IJsonService _jsonService;
+        private readonly IScriptingService _scriptingService;
 
         private readonly IHttpClientFactory _httpClientFactory;
 
@@ -310,7 +310,7 @@ public sealed partial class V83ApplicationConsumerService(
             ILogger<V83ApplicationConsumer> logger,
             V83ApplicationConsumerSettings settings,
             IKafkaService kafkaService,
-            IJsonService jsonService,
+            IScriptingService scriptingService,
             IHttpClientFactory httpClientFactory,
             ITransliterationService transliterationService,
             TransformMessageAsync transformMessageTask,
@@ -319,7 +319,7 @@ public sealed partial class V83ApplicationConsumerService(
             _logger = logger;
             Settings = settings;
             _kafkaService = kafkaService;
-            _jsonService = jsonService;
+            _scriptingService = scriptingService;
             _httpClientFactory = httpClientFactory;
 
             InfobaseName = ExtractInfobaseName(settings.InfobaseUrl);
@@ -399,7 +399,7 @@ public sealed partial class V83ApplicationConsumerService(
                         topic: consumeResult.Topic,
                         message: consumeResult.Message.Value,
                         Settings,
-                        _jsonService,
+                        _scriptingService,
                         _logger,
                         cancellationToken);
 

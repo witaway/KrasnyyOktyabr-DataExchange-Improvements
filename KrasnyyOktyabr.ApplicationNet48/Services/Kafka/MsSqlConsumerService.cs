@@ -10,14 +10,14 @@ using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 
 public sealed class MsSqlConsumerService(
     IConfiguration configuration,
-    IJsonService jsonService,
+    IScriptingService scriptingService,
     IMsSqlService msSqlService,
     IKafkaService kafkaService,
     ILogger<MsSqlConsumerService> logger,
@@ -28,7 +28,7 @@ public sealed class MsSqlConsumerService(
         string topic,
         string message,
         MsSqlConsumerSettings settings,
-        IJsonService jsonService,
+        IScriptingService scriptingService,
         ILogger logger,
         CancellationToken cancellationToken);
 
@@ -173,7 +173,7 @@ public sealed class MsSqlConsumerService(
         string topic,
         string message,
         MsSqlConsumerSettings settings,
-        IJsonService jsonService,
+        IScriptingService jsonService,
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
@@ -246,7 +246,7 @@ public sealed class MsSqlConsumerService(
             loggerFactory.CreateLogger<MsSqlConsumer>(),
             settings,
             kafkaService,
-            jsonService,
+            scriptingService,
             msSqlService,
             TransformMessageTask,
             SqlInsertTask);
@@ -278,7 +278,7 @@ public sealed class MsSqlConsumerService(
 
         private readonly IKafkaService _kafkaService;
 
-        private readonly IJsonService _jsonService;
+        private readonly IScriptingService _scriptingService;
 
         private readonly IMsSqlService _msSqlService;
 
@@ -297,7 +297,7 @@ public sealed class MsSqlConsumerService(
             ILogger<MsSqlConsumer> logger,
             MsSqlConsumerSettings settings,
             IKafkaService kafkaService,
-            IJsonService jsonService,
+            IScriptingService scriptingService,
             IMsSqlService msSqlService,
             TransformMessageAsync transformMessageTask,
             SqlInsertAsync sqlInsertTask)
@@ -305,7 +305,7 @@ public sealed class MsSqlConsumerService(
             _logger = logger;
             Settings = settings;
             _kafkaService = kafkaService;
-            _jsonService = jsonService;
+            _scriptingService = scriptingService;
             _msSqlService = msSqlService;
 
             DatabaseName = _kafkaService.ExtractConsumerGroupNameFromConnectionString(settings.ConnectionString);
@@ -387,7 +387,7 @@ public sealed class MsSqlConsumerService(
                         topic: consumeResult.Topic,
                         message: consumeResult.Message.Value,
                         Settings,
-                        _jsonService,
+                        _scriptingService,
                         _logger,
                         cancellationToken);
 

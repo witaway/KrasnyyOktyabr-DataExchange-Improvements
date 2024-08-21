@@ -6,18 +6,18 @@ using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services.Tests;
 
 [TestClass]
-public class JsonServiceTests
+public class ScriptingOneScriptServiceTests
 {
     private static Mock<IJsonAbstractExpressionFactory>? s_factoryMock;
 
-    private static Mock<ILogger<JsonService>>? s_loggerMock;
+    private static Mock<ILogger<ScriptingJsonLegacyService>>? s_loggerMock;
 
-    private static JsonService? s_jsonService;
+    private static ScriptingJsonLegacyService? s_jsonService;
 
     [TestInitialize]
     public void TestInitialized()

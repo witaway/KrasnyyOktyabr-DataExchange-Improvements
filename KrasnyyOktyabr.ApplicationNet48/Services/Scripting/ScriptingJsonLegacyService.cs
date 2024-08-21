@@ -11,12 +11,12 @@ using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
 using static KrasnyyOktyabr.JsonTransform.JsonHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services;
 
-public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<JsonService> logger) : IJsonService
+public sealed class ScriptingJsonLegacyService(IJsonAbstractExpressionFactory factory, ILogger<ScriptingJsonLegacyService> logger) : IScriptingService
 {
     public static string ConsumerInstructionsPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Properties", "ConsumerInstructions");
 
@@ -44,8 +44,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
         serializer.Serialize(writer, item);
         return writer.ToString();
     }
-
-#nullable enable
+    
     public Dictionary<string, string?> ExtractProperties(string json, IEnumerable<string> propertyNames)
     {
         JToken jToken = JToken.Parse(json);
@@ -124,14 +123,11 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
             dataType: null
         );
     }
-#nullable disable
 
     /// <param name="outputStream">Is written synchronously.</param>
     public async ValueTask RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken)
     {
-#nullable enable
         JObject? request = null;
-#nullable disable
 
         using (StreamReader inputStreamReader = new(inputStream))
         {
@@ -258,11 +254,6 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
     /// <exception cref="ArgumentException"></exception>
     private static JObject ParseObjectJson(string objectJson)
     {
-        if (objectJson is null)
-        {
-            throw new ArgumentNullException(nameof(objectJson));
-        }
-
         try
         {
             return JObject.Parse(objectJson);
@@ -272,8 +263,7 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
             throw new ArgumentException("Failed to parse JSON", ex);
         }
     }
-
-#nullable enable
+    
     private static void AddProperties(JObject jObject, Dictionary<string, object?> propertiesToAdd)
     {
         foreach (KeyValuePair<string, object?> property in propertiesToAdd)
@@ -281,17 +271,14 @@ public sealed class JsonService(IJsonAbstractExpressionFactory factory, ILogger<
             jObject[property.Key] = JToken.FromObject(property.Value ?? JValue.CreateNull());
         }
     }
-#nullable disable
-
+    
     private async ValueTask<IExpression<Task>> GetExpressionAsync(string instructionName)
     {
-#nullable enable
         if (_instructionNamesExpressions.TryGetValue(instructionName, out IExpression<Task>? cachedExpression))
         {
             return cachedExpression;
         }
-#nullable disable
-
+        
         string instructionFilePath = Path.Combine(ConsumerInstructionsPath, instructionName);
 
         logger.LogTrace("{InstructionName} not found in cache, loading from '{FilePath}'", instructionName, instructionFilePath);

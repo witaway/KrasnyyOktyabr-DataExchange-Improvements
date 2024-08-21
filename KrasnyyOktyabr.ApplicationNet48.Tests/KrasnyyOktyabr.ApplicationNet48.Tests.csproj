@@ -159,7 +159,7 @@
   <ItemGroup>
     <Compile Include="Logging\MessageHelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\JsonServiceTests.cs" />
+    <Compile Include="Services\ScriptingJsonLegacyServiceTests.cs" />
     <Compile Include="Services\Kafka\KafkaServiceTests.cs" />
     <Compile Include="Services\Kafka\V77ApplicationProducerServiceTests.cs" />
     <Compile Include="Services\MsSqlServiceTests.cs" />

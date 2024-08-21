@@ -14,7 +14,7 @@ using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
@@ -31,7 +31,7 @@ public sealed partial class V77ApplicationProducerService(
     IV77ApplicationLogService logService,
     IWmiService wmiService,
     IComV77ApplicationConnectionFactory connectionFactory,
-    IJsonService jsonService,
+    IScriptingService scriptingService,
     IKafkaService kafkaService)
     : IV77ApplicationProducerService
 {
@@ -56,7 +56,7 @@ public sealed partial class V77ApplicationProducerService(
         V77ApplicationProducerSettings settings,
         IEnumerable<LogTransaction> logTransactions,
         IEnumerable<string> objectJsons,
-        IJsonService jsonService,
+        IScriptingService scriptingService,
         IKafkaService kafkaService,
         CancellationToken cancellationToken);
 
@@ -297,7 +297,7 @@ public sealed partial class V77ApplicationProducerService(
         V77ApplicationProducerSettings settings,
         IEnumerable<LogTransaction> logTransactions,
         IEnumerable<string> objectJsons,
-        IJsonService jsonService,
+        IScriptingService jsonService,
         IKafkaService kafkaService,
         CancellationToken cancellationToken) =>
     {
@@ -414,7 +414,7 @@ public sealed partial class V77ApplicationProducerService(
             wmiService,
             offsetService,
             connectionFactory,
-            jsonService,
+            scriptingService,
             kafkaService,
             GetLogTransactionsTask,
             GetObjectJsonsTask,
@@ -455,7 +455,7 @@ public sealed partial class V77ApplicationProducerService(
 
         private readonly IComV77ApplicationConnectionFactory _connectionFactory;
 
-        private readonly IJsonService _jsonService;
+        private readonly IScriptingService _scriptingService;
 
         private readonly IKafkaService _kafkaService;
 
@@ -490,7 +490,7 @@ public sealed partial class V77ApplicationProducerService(
             IWmiService wmiService,
             IOffsetService offsetService,
             IComV77ApplicationConnectionFactory connectionFactory,
-            IJsonService jsonService,
+            IScriptingService scriptingService,
             IKafkaService kafkaService,
             GetLogTransactionsAsync getLogTransactionsTask,
             GetObjectJsonsAsync getObjectJsonsTask,
@@ -502,7 +502,7 @@ public sealed partial class V77ApplicationProducerService(
             _wmiService = wmiService;
             _offsetService = offsetService;
             _connectionFactory = connectionFactory;
-            _jsonService = jsonService;
+            _scriptingService = scriptingService;
             _kafkaService = kafkaService;
 
             InfobaseFullPath = GetInfobaseFullPath(settings.InfobasePath);
@@ -708,7 +708,7 @@ public sealed partial class V77ApplicationProducerService(
                     Settings,
                     transactions,
                     objectJsons,
-                    _jsonService,
+                    _scriptingService,
                     _kafkaService,
                     cancellationToken);
 

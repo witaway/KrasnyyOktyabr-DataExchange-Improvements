@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
 
-public class JsonTransformController(IJsonService jsonService, ILogger<JsonTransformController> logger) : ApiController
+public class JsonTransformController(IScriptingService scriptingService, ILogger<JsonTransformController> logger) : ApiController
 {
     [HttpPost]
     public async Task<IHttpActionResult> Run(HttpRequestMessage request, HttpResponseMessage response, CancellationToken cancellationToken)
@@ -34,7 +34,7 @@ public class JsonTransformController(IJsonService jsonService, ILogger<JsonTrans
 
         try
         {
-            await jsonService.RunJsonTransformAsync(bodyStream, resultStream, cancellationToken).ConfigureAwait(false);
+            await scriptingService.RunJsonTransformAsync(bodyStream, resultStream, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

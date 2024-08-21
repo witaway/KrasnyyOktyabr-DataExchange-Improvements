@@ -68,7 +68,7 @@ public class RestartService(ILogger<RestartService> logger, IServiceProvider pro
 
         (int consumers1C8Stopped, int consumers1C8Started) = await Restart<IV83ApplicationConsumerService>(provider, cancellationToken).ConfigureAwait(false);
 
-        int consumerInstructionCleared = provider.GetRequiredService<IJsonService>().ClearCachedExpressions();
+        int consumerInstructionCleared = provider.GetRequiredService<IScriptingService>().ClearCachedExpressions();
 
         provider.GetRequiredService<IKafkaService>().Restart();
 

@@ -5,7 +5,7 @@ using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IJsonService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
@@ -26,7 +26,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
     ILoggerFactory loggerFactory,
     IV77ApplicationLogService logService,
     IComV77ApplicationConnectionFactory connectionFactory,
-    IJsonService jsonService,
+    IScriptingService scriptingService,
     IKafkaService kafkaService)
     : IV77ApplicationPeriodProduceJobService
 {
@@ -51,7 +51,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
         V77ApplicationPeriodProduceJobRequest request,
         LogTransaction[] logTransactions,
         List<string> objectJsons,
-        IJsonService jsonService,
+        IScriptingService scriptingService,
         IKafkaService kafkaService,
         CancellationToken cancellationToken);
 
@@ -187,7 +187,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
         V77ApplicationPeriodProduceJobRequest request,
         LogTransaction[] logTransactions,
         List<string> objectJsons,
-        IJsonService jsonService,
+        IScriptingService jsonService,
         IKafkaService kafkaService,
         CancellationToken cancellationToken) =>
     {
@@ -264,7 +264,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
                 request,
                 logService,
                 connectionFactory,
-                jsonService,
+                scriptingService,
                 kafkaService,
                 ProduceFromPeriodTask,
                 GetObjectJsonsTask,
@@ -320,7 +320,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
 
         private readonly IComV77ApplicationConnectionFactory _connectionFactory;
 
-        private readonly IJsonService _jsonService;
+        private readonly IScriptingService _scriptingService;
 
         private readonly IKafkaService _kafkaService;
 
@@ -341,7 +341,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
             V77ApplicationPeriodProduceJobRequest request,
             IV77ApplicationLogService logService,
             IComV77ApplicationConnectionFactory connectionFactory,
-            IJsonService jsonService,
+            IScriptingService scriptingService,
             IKafkaService kafkaService,
             ProduceFromPeriodAsync produceFromPeriodTask,
             GetObjectJsonsAsync getObjectJsonsTask,
@@ -352,7 +352,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
             _request = request;
             _logService = logService;
             _connectionFactory = connectionFactory;
-            _jsonService = jsonService;
+            _scriptingService = scriptingService;
             _kafkaService = kafkaService;
 
             _objectFilters = [.. request.ObjectFilters];
@@ -450,7 +450,7 @@ public sealed class V77ApplicationPeriodProduceJobService(
                         _request,
                         logTransactionsChunk,
                         objectJsons,
-                        _jsonService,
+                        _scriptingService,
                         _kafkaService,
                         cancellationToken)
                         .ConfigureAwait(false);

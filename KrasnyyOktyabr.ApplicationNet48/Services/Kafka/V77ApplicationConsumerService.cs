@@ -21,7 +21,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
 public sealed class V77ApplicationConsumerService(
     IConfiguration configuration,
     IWmiService wmiService,
-    IJsonService jsonService,
+    IScriptingService scriptingService,
     IComV77ApplicationConnectionFactory connectionFactory,
     IKafkaService kafkaService,
     ITransliterationService transliterationService,
@@ -33,7 +33,7 @@ public sealed class V77ApplicationConsumerService(
         string topic,
         string message,
         V77ApplicationConsumerSettings settings,
-        IJsonService jsonService,
+        IScriptingService scriptingService,
         ILogger logger,
         CancellationToken cancellationToken);
 
@@ -178,7 +178,7 @@ public sealed class V77ApplicationConsumerService(
         string topic,
         string message,
         V77ApplicationConsumerSettings settings,
-        IJsonService jsonService,
+        IScriptingService jsonService,
         ILogger logger,
         CancellationToken cancellationToken) =>
     {
@@ -274,7 +274,7 @@ public sealed class V77ApplicationConsumerService(
             settings,
             wmiService,
             kafkaService,
-            jsonService,
+            scriptingService,
             connectionFactory,
             transliterationService,
             TransformMessageTask,
@@ -309,7 +309,7 @@ public sealed class V77ApplicationConsumerService(
 
         private readonly IKafkaService _kafkaService;
 
-        private readonly IJsonService _jsonService;
+        private readonly IScriptingService _scriptingService;
 
         private readonly IComV77ApplicationConnectionFactory _connectionFactory;
 
@@ -329,7 +329,7 @@ public sealed class V77ApplicationConsumerService(
             V77ApplicationConsumerSettings settings,
             IWmiService wmiService,
             IKafkaService kafkaService,
-            IJsonService jsonService,
+            IScriptingService scriptingService,
             IComV77ApplicationConnectionFactory connectionFactory,
             ITransliterationService transliterationService,
             TransformMessageAsync transformMessageTask,
@@ -340,7 +340,7 @@ public sealed class V77ApplicationConsumerService(
             Topics = [.. Settings.TopicsInstructionNames.Keys];
             _wmiService = wmiService;
             _kafkaService = kafkaService;
-            _jsonService = jsonService;
+            _scriptingService = scriptingService;
             _connectionFactory = connectionFactory;
 
             InfobaseName = ExtractInfobaseName(settings.InfobasePath);
@@ -423,7 +423,7 @@ public sealed class V77ApplicationConsumerService(
                         topic: consumeResult.Topic,
                         message: consumeResult.Message.Value,
                         Settings,
-                        _jsonService,
+                        _scriptingService,
                         _logger,
                         cancellationToken);
 
