@@ -17,42 +17,7 @@ public interface IScriptingService
         public Dictionary<string, dynamic> ColumnValues { get; } = columnValues;
     }
 
-    public struct KafkaProducerMessageData(string objectJson, string? dataType)
-    {
-        public readonly string ObjectJson { get; } = objectJson;
-
-        public readonly string? DataType { get; } = dataType;
-
-        public string? TopicName { get; set; }
-    }
-
     int ClearCachedExpressions();
-
-    /// <summary>
-    /// Works with <see cref="Newtonsoft.Json.JsonPropertyAttribute"/>.
-    /// </summary>
-    string Serialize(object item);
-
-    /// <remarks>
-    /// Uses <c>null</c> when property is not present.
-    /// </remarks>
-    Dictionary<string, string?> ExtractProperties(string json, IEnumerable<string> propertyNames); 
-
-    /// <summary>
-    /// Remove empty properties using <see cref="JsonTransform.JsonHelper"/>,
-    /// add properties from <paramref name="propertiesToAdd"/>
-    /// and extract property with name <paramref name="dataTypePropertyName"/>.
-    /// </summary>
-    /// <exception cref="FailedToGetDataTypeException"></exception>
-    KafkaProducerMessageData BuildKafkaProducerMessageData(string objectJson, Dictionary<string, object?> propertiesToAdd, string dataTypePropertyName);
-
-    /// <summary>
-    /// Remove empty properties using <see cref="JsonTransform.JsonHelper"/>,
-    /// add properties from <paramref name="propertiesToAdd"/>.
-    /// </summary>
-    /// <exception cref="FailedToGetDataTypeException"></exception>
-    /// <returns><see cref="KafkaProducerMessageData"/> with <c>null</c> <see cref="KafkaProducerMessageData.DataType"/>.</returns>
-    KafkaProducerMessageData BuildKafkaProducerMessageData(string objectJson, Dictionary<string, object?> propertiesToAdd);
 
     /// <param name="inputStream">
     /// Must contain JSON: <c>"{'instructions': ... ,'input': { ... } }"</c>
@@ -75,12 +40,4 @@ public interface IScriptingService
         string instructionName,
         string message,
         CancellationToken cancellationToken);
-
-    public class FailedToGetDataTypeException : Exception
-    {
-        internal FailedToGetDataTypeException(string dataTypePropertyName)
-            : base($"Failed to get data type with property name '{dataTypePropertyName}'")
-        {
-        }
-    }
 }

@@ -13,6 +13,7 @@ using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.V77ApplicationLogService;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Models;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
@@ -338,12 +339,12 @@ public sealed partial class V77ApplicationProducerService(
                 .Where(f => logTransactionObjectJson.Item1.ObjectId.StartsWith(f.IdPrefix))
                 .Select(f => f.Topic)
                 .FirstOrDefault();
-
+            
             // 2.3 Collect data needed to send Kafka message
             KafkaProducerMessageData messageData = topicFromSettings is null
-                ? jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd, settings.DataTypePropertyName)
-                : jsonService.BuildKafkaProducerMessageData(logTransactionObjectJson.Item2, propertiesToAdd);
-
+                ? new(logTransactionObjectJson.Item2, propertiesToAdd, settings.DataTypePropertyName)
+                : new(logTransactionObjectJson.Item2, propertiesToAdd);
+            
             // 2.4 Use Kafka topic name from settings or generate
             messageData.TopicName = topicFromSettings is null
                 ? kafkaService.BuildTopicName(infobasePubName, messageData.DataType)

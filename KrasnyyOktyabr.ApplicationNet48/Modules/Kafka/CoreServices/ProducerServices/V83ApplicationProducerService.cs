@@ -23,7 +23,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.ProducerSer
 
 public sealed class V83ApplicationProducerService(
     IConfiguration configuration,
-    IScriptingService scriptingService,
+    IJsonService jsonService,
     IOffsetService offsetService,
     IHttpClientFactory httpClientFactory,
     IKafkaService kafkaService,
@@ -55,7 +55,7 @@ public sealed class V83ApplicationProducerService(
     /// <returns>New transaction JSON.</returns>
     public delegate ValueTask<NewLogTransactionResponse> GetNewLogTransactionAsync(
         V83ApplicationProducerSettings settings,
-        IScriptingService scriptingService,
+        IJsonService jsonService,
         IOffsetService offsetService,
         IHttpClientFactory httpClientFactory,
         ILogger logger,
@@ -209,7 +209,7 @@ public sealed class V83ApplicationProducerService(
 
     public GetNewLogTransactionAsync GetNewLogTransactionTask => async (
         V83ApplicationProducerSettings settings,
-        IScriptingService jsonService,
+        IJsonService jsonService,
         IOffsetService offsetService,
         IHttpClientFactory httpClientFactory,
         ILogger logger,
@@ -340,7 +340,7 @@ public sealed class V83ApplicationProducerService(
         V83ApplicationProducer producer = new(
             loggerFactory.CreateLogger<V83ApplicationProducer>(),
             settings,
-            scriptingService,
+            jsonService,
             offsetService,
             kafkaService,
             httpClientFactory,
@@ -376,7 +376,7 @@ public sealed class V83ApplicationProducerService(
 
         private readonly string _infobasePubName;
 
-        private readonly IScriptingService _scriptingService;
+        private readonly IJsonService _jsonService;
 
         private readonly IOffsetService _offsetService;
 
@@ -398,7 +398,7 @@ public sealed class V83ApplicationProducerService(
         internal V83ApplicationProducer(
             ILogger<V83ApplicationProducer> logger,
             V83ApplicationProducerSettings settings,
-            IScriptingService scriptingService,
+            IJsonService jsonService,
             IOffsetService offsetService,
             IKafkaService kafkaService,
             IHttpClientFactory httpClientFactory,
@@ -407,7 +407,7 @@ public sealed class V83ApplicationProducerService(
         {
             _logger = logger;
             Settings = settings;
-            _scriptingService = scriptingService;
+            _jsonService = jsonService;
             _offsetService = offsetService;
             _kafkaService = kafkaService;
             _httpClientFactory = httpClientFactory;
@@ -475,7 +475,7 @@ public sealed class V83ApplicationProducerService(
 
                     NewLogTransactionResponse newLogTransaction = await _getNewLogTransactionTask(
                         Settings,
-                        _scriptingService,
+                        _jsonService,
                         _offsetService,
                         _httpClientFactory,
                         _logger,
