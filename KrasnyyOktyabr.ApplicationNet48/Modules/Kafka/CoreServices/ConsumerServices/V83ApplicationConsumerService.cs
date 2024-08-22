@@ -11,7 +11,7 @@ using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Common.Helpers;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+using KrasnyyOktyabr.Scripting.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Common.Logging.KafkaLoggingHelper;

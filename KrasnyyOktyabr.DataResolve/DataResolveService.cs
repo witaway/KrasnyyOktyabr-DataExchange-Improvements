@@ -11,7 +11,7 @@ using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using KrasnyyOktyabr.DataResolve.Resolvers;
 using KrasnyyOktyabr.DataResolve.Helpers;
-using KrasnyyOktyabr.MsSql;
+using MsSql;
 using static KrasnyyOktyabr.DataResolve.Helpers.JsonHelper;
 using static KrasnyyOktyabr.DataResolve.IDataResolveService;
 

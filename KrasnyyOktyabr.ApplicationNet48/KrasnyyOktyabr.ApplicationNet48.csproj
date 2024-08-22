@@ -360,10 +360,6 @@
     <Compile Include="Modules\Kafka\HelperServices\WmiService.cs" />
     <Compile Include="Modules\Kafka\Helpers\V77ApplicationHelper.cs" />
     <Compile Include="Modules\Kafka\Models\KafkaProducerMessageData.cs" />
-    <Compile Include="Modules\Scripting\Helpers\JsonHelper.cs" />
-    <Compile Include="Modules\Scripting\IScriptingService.cs" />
-    <Compile Include="Modules\Scripting\ScriptingJsonLegacyService.cs" />
-    <Compile Include="Modules\Scripting\ScriptingOneScriptService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -388,13 +384,21 @@
       <Project>{a6757dfb-77db-49cf-9c79-0f5382669556}</Project>
       <Name>KrasnyyOktyabr.DataResolve</Name>
     </ProjectReference>
-    <ProjectReference Include="..\KrasnyyOktyabr.JsonTransform\KrasnyyOktyabr.JsonTransform.csproj">
-      <Project>{324E7F72-9FEA-4A40-BF1A-4C9558BA49AD}</Project>
-      <Name>KrasnyyOktyabr.JsonTransform</Name>
+    <ProjectReference Include="..\KrasnyyOktyabr.Scripting.Core\KrasnyyOktyabr.Scripting.Core.csproj">
+      <Project>{3f4ff9c8-c219-43fe-aec7-ac5b1d5a1d86}</Project>
+      <Name>KrasnyyOktyabr.Scripting.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KrasnyyOktyabr.Scripting.JsonTransform\KrasnyyOktyabr.Scripting.JsonTransform.csproj">
+      <Project>{324e7f72-9fea-4a40-bf1a-4c9558ba49ad}</Project>
+      <Name>KrasnyyOktyabr.Scripting.JsonTransform</Name>
     </ProjectReference>
     <ProjectReference Include="..\KrasnyyOktyabr.MsSql\KrasnyyOktyabr.MsSql.csproj">
       <Project>{5d23e7ea-c9ec-422b-b08c-54a3b427cada}</Project>
       <Name>KrasnyyOktyabr.MsSql</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KrasnyyOktyabr.Scripting.OneScript\KrasnyyOktyabr.Scripting.OneScript.csproj">
+      <Project>{83b4474d-baa9-4588-bd4f-db9e49f45932}</Project>
+      <Name>KrasnyyOktyabr.Scripting.OneScript</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

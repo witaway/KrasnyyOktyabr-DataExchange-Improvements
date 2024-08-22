@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace KrasnyyOktyabr.MsSql;
+namespace MsSql;
 
 public interface IMsSqlService
 {

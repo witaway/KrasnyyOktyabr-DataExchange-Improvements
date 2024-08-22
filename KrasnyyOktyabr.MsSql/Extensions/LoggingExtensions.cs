@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace KrasnyyOktyabr.MsSql.Extensions;
+namespace MsSql.Extensions;
 
 internal static class LoggingExtensions
 {

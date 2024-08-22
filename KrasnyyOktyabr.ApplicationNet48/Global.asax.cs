@@ -10,13 +10,14 @@ using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.DependencyInjection;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 using KrasnyyOktyabr.ComV77Application;
-using KrasnyyOktyabr.MsSql;
+using KrasnyyOktyabr.JsonTransform;
+using KrasnyyOktyabr.Scripting.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MsSql;
 using NLog;
 using NLog.Web;
 
@@ -102,7 +103,7 @@ public class WebApiApplication : HttpApplication
 
         builder.Services.AddSingleton<IWmiService, WmiService>();
 
-        builder.Services.AddSingleton<IScriptingService, ScriptingJsonLegacyService>();
+        builder.Services.AddSingleton<IScriptingService, ScriptingJsonTransformService>();
         
         builder.Services.AddSingleton<IKafkaService, KafkaService>();
 

@@ -7,10 +7,10 @@ using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using KrasnyyOktyabr.MsSql.Extensions;
 using Microsoft.Extensions.Logging;
+using MsSql.Extensions;
 
-namespace KrasnyyOktyabr.MsSql;
+namespace MsSql;
 
 public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
 {

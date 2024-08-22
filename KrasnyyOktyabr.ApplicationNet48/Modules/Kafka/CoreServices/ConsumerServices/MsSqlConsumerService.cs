@@ -9,11 +9,11 @@ using KrasnyyOktyabr.ApplicationNet48.Common.Helpers;
 using KrasnyyOktyabr.ApplicationNet48.Common.Logging;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
-using KrasnyyOktyabr.MsSql;
+using KrasnyyOktyabr.Scripting.Core;
+using KrasnyyOktyabr.Scripting.Core.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.IScriptingService;
+using MsSql;
 using static KrasnyyOktyabr.ApplicationNet48.Common.Helpers.TimeHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.ConsumerServices;

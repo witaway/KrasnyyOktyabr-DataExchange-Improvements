@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using KrasnyyOktyabr.MsSql;
-using static KrasnyyOktyabr.MsSql.MsSqlService;
+using static MsSql.MsSqlService;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services;

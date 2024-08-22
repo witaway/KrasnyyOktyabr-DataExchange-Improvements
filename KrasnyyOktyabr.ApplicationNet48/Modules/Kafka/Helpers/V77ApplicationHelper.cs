@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
 using Microsoft.Extensions.Logging;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Helpers;
 
 public static class V77ApplicationHelper
 {

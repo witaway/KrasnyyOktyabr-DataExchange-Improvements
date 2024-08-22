@@ -1,6 +1,6 @@
 ﻿using KrasnyyOktyabr.JsonTransform.Numerics;
 using Newtonsoft.Json.Linq;
-using static KrasnyyOktyabr.JsonTransform.ExceptionsHelper;
+using static KrasnyyOktyabr.JsonTransform.Helpers.ExceptionsHelper;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 

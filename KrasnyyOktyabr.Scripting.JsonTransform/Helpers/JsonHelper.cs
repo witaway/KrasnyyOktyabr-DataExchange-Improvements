@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
-namespace KrasnyyOktyabr.JsonTransform;
+namespace KrasnyyOktyabr.JsonTransform.Helpers;
 
 public static class JsonHelper
 {

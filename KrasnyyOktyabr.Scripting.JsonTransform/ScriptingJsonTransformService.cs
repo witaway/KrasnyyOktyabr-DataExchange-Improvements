@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using KrasnyyOktyabr.JsonTransform;
+﻿using System.Collections.Concurrent;
 using KrasnyyOktyabr.JsonTransform.Expressions;
 using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
+using KrasnyyOktyabr.Scripting.Core;
+using KrasnyyOktyabr.Scripting.Core.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.IScriptingService;
-using static KrasnyyOktyabr.JsonTransform.JsonHelper;
+using static KrasnyyOktyabr.JsonTransform.Helpers.JsonHelper;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+namespace KrasnyyOktyabr.JsonTransform;
 
-public sealed class ScriptingJsonLegacyService(IJsonAbstractExpressionFactory factory, ILogger<ScriptingJsonLegacyService> logger) : IScriptingService
+public sealed class ScriptingJsonTransformService(IJsonAbstractExpressionFactory factory, ILogger<ScriptingJsonTransformService> logger) : IScriptingService
 {
     public static string ConsumerInstructionsPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Properties", "ConsumerInstructions");
 

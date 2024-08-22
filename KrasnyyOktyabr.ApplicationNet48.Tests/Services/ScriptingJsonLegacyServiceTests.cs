@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+using KrasnyyOktyabr.JsonTransform;
 using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -16,9 +17,9 @@ public class ScriptingOneScriptServiceTests
 {
     private static Mock<IJsonAbstractExpressionFactory>? s_factoryMock;
 
-    private static Mock<ILogger<ScriptingJsonLegacyService>>? s_loggerMock;
+    private static Mock<ILogger<ScriptingJsonTransformService>>? s_loggerMock;
 
-    private static ScriptingJsonLegacyService? s_jsonService;
+    private static ScriptingJsonTransformService? s_jsonService;
 
     [TestInitialize]
     public void TestInitialized()

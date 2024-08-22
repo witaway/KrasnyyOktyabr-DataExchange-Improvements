@@ -12,7 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+using KrasnyyOktyabr.Scripting.Core;
 using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers;

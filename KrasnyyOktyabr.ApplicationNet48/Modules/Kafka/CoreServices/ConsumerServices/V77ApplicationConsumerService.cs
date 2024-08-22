@@ -10,12 +10,12 @@ using KrasnyyOktyabr.ApplicationNet48.Common.Helpers;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
+using KrasnyyOktyabr.Scripting.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.V77ApplicationHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Helpers.V77ApplicationHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Common.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Common.Helpers.TimeHelper;
 

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace KrasnyyOktyabr.JsonTransform;
+namespace KrasnyyOktyabr.JsonTransform.Helpers;
 
 public static class ExceptionsHelper
 {

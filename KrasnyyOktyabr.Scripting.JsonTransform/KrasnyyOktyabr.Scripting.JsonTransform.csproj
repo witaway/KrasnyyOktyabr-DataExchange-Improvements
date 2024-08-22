@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>12.0</LangVersion>
     <Version>0.2.5</Version>
+    <RootNamespace>KrasnyyOktyabr.JsonTransform</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,12 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DependencyInjection\" />
     <Folder Include="Expressions\DataResolve\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\KrasnyyOktyabr.DataResolve\KrasnyyOktyabr.DataResolve.csproj" />
+    <ProjectReference Include="..\KrasnyyOktyabr.Scripting.Core\KrasnyyOktyabr.Scripting.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

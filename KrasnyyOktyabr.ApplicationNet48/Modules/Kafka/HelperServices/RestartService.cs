@@ -6,7 +6,7 @@ using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.ConsumerServices;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.ProducerServices;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+using KrasnyyOktyabr.Scripting.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

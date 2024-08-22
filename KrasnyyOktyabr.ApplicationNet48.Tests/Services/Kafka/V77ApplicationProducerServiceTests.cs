@@ -18,7 +18,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.IScriptingService;
 using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.V77ApplicationLogService.IV77ApplicationLogService;
-using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.V77ApplicationHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Helpers.V77ApplicationHelper;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services.Kafka;
 

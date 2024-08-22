@@ -1,4 +1,4 @@
-﻿namespace KrasnyyOktyabr.ComV77Application.Threading;
+﻿namespace KrasnyyOktyabr.ComV77Application.Helpers;
 
 internal class PeriodicTimer : IDisposable
 {

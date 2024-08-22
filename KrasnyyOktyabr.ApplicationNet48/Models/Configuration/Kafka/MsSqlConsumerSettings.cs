@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using KrasnyyOktyabr.MsSql;
+using MsSql;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 
