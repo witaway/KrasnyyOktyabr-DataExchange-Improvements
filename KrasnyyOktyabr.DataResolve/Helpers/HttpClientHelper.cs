@@ -6,7 +6,7 @@ using System.Text;
 
 namespace KrasnyyOktyabr.DataResolve.Helpers;
 
-public static class HttpClientHelper
+internal static class HttpClientHelper
 {
     public static AuthenticationHeaderValue GetAuthenticationHeaderValue(string username, string? password)
     {

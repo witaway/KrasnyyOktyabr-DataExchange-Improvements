@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace KrasnyyOktyabr.DataResolve.Helpers;
 
-public static class JsonHelper
+internal static class JsonHelper
 {
     public static bool TryConvertThroughJToken<T>(object value, out T? converted)
     {

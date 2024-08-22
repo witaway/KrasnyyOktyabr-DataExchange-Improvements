@@ -1,6 +1,6 @@
 ﻿namespace KrasnyyOktyabr.ComV77Application.Threading;
 
-public class PeriodicTimer : IDisposable
+internal class PeriodicTimer : IDisposable
 {
     public PeriodicTimer(TimeSpan period)
     {

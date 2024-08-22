@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ComV77Application.Logging;
 
-public static partial class LoggingHelper
+internal static partial class LoggingHelper
 {
     public static string NullString => "null";
 
