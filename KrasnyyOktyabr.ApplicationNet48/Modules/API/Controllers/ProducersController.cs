@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.PeriodServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices.PeriodServices;
 using Microsoft.Extensions.Logging;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers;

@@ -1,6 +1,6 @@
 ﻿using System;
+using KrasnyyOktyabr.ApplicationNet48.Common.Helpers;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration;
-using KrasnyyOktyabr.ApplicationNet48.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services;

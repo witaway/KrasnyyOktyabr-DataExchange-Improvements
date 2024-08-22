@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.DependencyInjection;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
-using KrasnyyOktyabr.ApplicationNet48.Services;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.MsSql;
 using Microsoft.Extensions.Configuration;
@@ -40,24 +40,21 @@ public class WebApiApplication : HttpApplication
             IHost app = BuildHost();
 
             GlobalConfiguration.Configure(WebApiConfig.Register(provider: app.Services));
+            WebApiConfig.Register(provider: app.Services);
 
+            // Start application host
             _hostCancellation = new();
-            _hostTask = Task.Run(() =>
-            {
-                try
-                {
-                    app.RunAsync(_hostCancellation.Token);
-                }
-                catch (Exception ex)
-                {
-                    s_logger.Error(ex);
-                }
-            });
+            _hostTask = Task.Run(() => app.RunAsync(_hostCancellation.Token));
+            
+            // Log application host exceptions
+            _hostTask.ContinueWith(
+                failedHostTask => s_logger.Fatal(failedHostTask.Exception),
+                TaskContinuationOptions.OnlyOnFaulted
+            );
         }
         catch (Exception ex)
         {
             s_logger.Error(ex);
-
             throw;
         }
     }
@@ -106,9 +103,7 @@ public class WebApiApplication : HttpApplication
         builder.Services.AddSingleton<IWmiService, WmiService>();
 
         builder.Services.AddSingleton<IScriptingService, ScriptingJsonLegacyService>();
-
-        builder.Services.AddSingleton<ITransliterationService, TransliterationService>();
-
+        
         builder.Services.AddSingleton<IKafkaService, KafkaService>();
 
         builder.Services.AddControllers();

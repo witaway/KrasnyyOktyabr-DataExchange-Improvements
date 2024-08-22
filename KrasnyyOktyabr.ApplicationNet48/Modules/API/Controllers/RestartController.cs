@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
-using KrasnyyOktyabr.ApplicationNet48.Services;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 

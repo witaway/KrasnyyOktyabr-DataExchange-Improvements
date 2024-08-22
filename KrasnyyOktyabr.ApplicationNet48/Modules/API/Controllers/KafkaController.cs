@@ -9,7 +9,7 @@ using System.Web.Http;
 using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Common.Logging;
 using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
-using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.CoreServices;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Modules.API.Helpers.ControllersHelper;
 
