@@ -7,7 +7,7 @@ namespace KrasnyyOktyabr.ApplicationNet48.DependencyInjection;
 
 public class DependencyResolver(IServiceProvider serviceProvider) : IDependencyResolver
 {
-    private IServiceScope _serviceScope;
+    private IServiceScope? _serviceScope;
 
     protected IServiceProvider ServiceProvider { get; set; } = serviceProvider;
 
@@ -16,7 +16,7 @@ public class DependencyResolver(IServiceProvider serviceProvider) : IDependencyR
         return ServiceProvider.GetService(serviceType);
     }
 
-    public IEnumerable<object> GetServices(Type serviceType)
+    public IEnumerable<object?> GetServices(Type serviceType)
     {
         return ServiceProvider.GetServices(serviceType);
     }

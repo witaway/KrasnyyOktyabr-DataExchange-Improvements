@@ -22,7 +22,7 @@ public static class V77ApplicationHelper
     public static string ObjectDatePropertyName => "ДатаДокИзЛогов";
 
     /// <exception cref="OperationCanceledException"></exception>
-    public static async ValueTask WaitRdSessionsAllowed(IWmiService wmiService, CancellationToken cancellationToken = default, ILogger logger = null)
+    public static async ValueTask WaitRdSessionsAllowed(IWmiService wmiService, CancellationToken cancellationToken = default, ILogger? logger = null)
     {
         try
         {

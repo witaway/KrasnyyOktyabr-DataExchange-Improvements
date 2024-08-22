@@ -15,7 +15,7 @@ using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 using Microsoft.Extensions.Logging;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers.JsonTransform;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers;
 
 [ApiRoutePrefix("jsontransform")]
 public class JsonTransformController(IScriptingService scriptingService, ILogger<JsonTransformController> logger) : ApiController

@@ -12,6 +12,7 @@ using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 using KrasnyyOktyabr.ApplicationNet48.Services;
 using KrasnyyOktyabr.ComV77Application;
+using KrasnyyOktyabr.MsSql;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

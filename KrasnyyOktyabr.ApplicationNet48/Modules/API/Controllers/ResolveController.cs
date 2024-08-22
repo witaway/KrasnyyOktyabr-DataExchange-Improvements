@@ -11,7 +11,7 @@ using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using KrasnyyOktyabr.DataResolve;
 using KrasnyyOktyabr.DataResolve.Resolvers;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers.Resolvers;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers;
 
 [ApiRoutePrefix("resolve")]
 public class ResolveController(IComV77ApplicationConnectionFactory connectionFactory) : ApiController

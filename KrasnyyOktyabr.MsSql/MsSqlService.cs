@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.OleDb;
+using System.Data.SqlClient;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using KrasnyyOktyabr.MsSql.Extensions;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
-using static KrasnyyOktyabr.ApplicationNet48.Common.Logging.MsSqlLoggingHelper;
-using System.Data.SqlClient;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services;
+namespace KrasnyyOktyabr.MsSql;
 
 public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
 {
@@ -49,12 +48,12 @@ public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
     /// <exception cref="MsSqlException"></exception>
     public async Task<object?> SelectSingleValueAsync(string connectionString, string query)
     {
-        return await SelectSingleValueAsync(connectionString, query, ConnectionType.OleDbConnection);
+        return await SelectSingleValueAsync(connectionString, query, IMsSqlService.ConnectionType.OleDbConnection);
     }
 
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="MsSqlException"></exception>
-    public async Task<object?> SelectSingleValueAsync(string connectionString, string query, ConnectionType connectionType)
+    public async Task<object?> SelectSingleValueAsync(string connectionString, string query, IMsSqlService.ConnectionType connectionType)
     {
         ValidateSelectQueryCommandText(query);
 
@@ -89,12 +88,12 @@ public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
     /// <exception cref="MsSqlException"></exception>
     public async Task InsertAsync(string connectionString, string table, Dictionary<string, dynamic> columnsValues)
     {
-        await InsertAsync(connectionString, table, columnsValues, ConnectionType.OleDbConnection);
+        await InsertAsync(connectionString, table, columnsValues, IMsSqlService.ConnectionType.OleDbConnection);
     }
 
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="MsSqlException"></exception>
-    public async Task InsertAsync(string connectionString, string table, Dictionary<string, dynamic> columnsValues, ConnectionType connectionType)
+    public async Task InsertAsync(string connectionString, string table, Dictionary<string, dynamic> columnsValues, IMsSqlService.ConnectionType connectionType)
     {
         string commandText = BuildInsertQueryText(table, columnsValues);
 
@@ -195,12 +194,12 @@ public class MsSqlService(ILogger<MsSqlService> logger) : IMsSqlService
 
     private class DbConnectionAbstractFactory
     {
-        internal static IDbConnectionFactory GetConnectionFactory(ConnectionType connectionType)
+        internal static IDbConnectionFactory GetConnectionFactory(IMsSqlService.ConnectionType connectionType)
         {
             return connectionType switch
             {
-                ConnectionType.SqlConnection => new SqlConnectionFactory(),
-                ConnectionType.OleDbConnection => new OleDbConnectionFactory(),
+                IMsSqlService.ConnectionType.SqlConnection => new SqlConnectionFactory(),
+                IMsSqlService.ConnectionType.OleDbConnection => new OleDbConnectionFactory(),
                 _ => throw new NotImplementedException(),
             };
         }

@@ -3,11 +3,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using KrasnyyOktyabr.MsSql;
 
 namespace KrasnyyOktyabr.DataResolve.Resolvers;
 
 /// <exception cref="ArgumentNullException"></exception>
-public class MsSqlSingleValueDataResolver(IMsSqlService service, string connectionString, string query, ConnectionType? connectionType) : IDataResolver
+public class MsSqlSingleValueDataResolver(IMsSqlService service, string connectionString, string query, IMsSqlService.ConnectionType? connectionType) : IDataResolver
 {
     private readonly IMsSqlService _service = service ?? throw new ArgumentNullException(nameof(service));
 

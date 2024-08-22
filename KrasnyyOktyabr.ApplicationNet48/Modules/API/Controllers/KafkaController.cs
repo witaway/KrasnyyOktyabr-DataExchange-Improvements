@@ -13,7 +13,7 @@ using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Modules.API.Helpers.ControllersHelper;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers.Kafka;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers;
 
 [ApiRoutePrefix("kafka")]
 public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController> logger) : ApiController

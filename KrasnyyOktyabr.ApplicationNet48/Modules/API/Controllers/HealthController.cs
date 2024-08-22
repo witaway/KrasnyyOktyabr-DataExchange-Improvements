@@ -14,7 +14,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers.Health;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers;
 
 public class HealthController(HealthCheckService healthCheckService) : ApiController
 {

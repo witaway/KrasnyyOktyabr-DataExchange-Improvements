@@ -270,7 +270,6 @@
     <Compile Include="Common\Extensions\LinqChunkExtension.cs" />
     <Compile Include="Common\Logging\KafkaLoggingHelper.cs" />
     <Compile Include="Common\Logging\MessageHelper.cs" />
-    <Compile Include="Common\Logging\MsSqlLoggingHelper.cs" />
     <Compile Include="DependencyInjection\DependencyResolver.cs" />
     <Compile Include="DependencyInjection\JsonTransformDependencyInjectionHelper.cs" />
     <Compile Include="DependencyInjection\KafkaDependencyInjectionHelper.cs" />
@@ -350,7 +349,6 @@
     <Compile Include="Modules\Scripting\ScriptingOneScriptService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\HttpClientHelper.cs" />
-    <Compile Include="Services\IMsSqlService.cs" />
     <Compile Include="Services\IOffsetService.cs" />
     <Compile Include="Services\IRestartable.cs" />
     <Compile Include="Services\IRestartableHostedService.cs" />
@@ -358,7 +356,6 @@
     <Compile Include="Services\ITransliterationService.cs" />
     <Compile Include="Services\IV77ApplicationLogService.cs" />
     <Compile Include="Services\IWmiService.cs" />
-    <Compile Include="Services\MsSqlService.cs" />
     <Compile Include="Services\OffsetService.cs" />
     <Compile Include="Services\RestartService.cs" />
     <Compile Include="Services\TimeHelper.cs" />
@@ -395,6 +392,10 @@
     <ProjectReference Include="..\KrasnyyOktyabr.JsonTransform\KrasnyyOktyabr.JsonTransform.csproj">
       <Project>{324E7F72-9FEA-4A40-BF1A-4C9558BA49AD}</Project>
       <Name>KrasnyyOktyabr.JsonTransform</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KrasnyyOktyabr.MsSql\KrasnyyOktyabr.MsSql.csproj">
+      <Project>{5d23e7ea-c9ec-422b-b08c-54a3b427cada}</Project>
+      <Name>KrasnyyOktyabr.MsSql</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

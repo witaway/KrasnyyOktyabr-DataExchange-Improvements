@@ -7,7 +7,7 @@ using KrasnyyOktyabr.ApplicationNet48.Services;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers.Restart;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers;
 
 [ApiRoutePrefix("restart")]
 public class RestartController(IRestartService restartService, ILogger<RestartController> logger) : ApiController

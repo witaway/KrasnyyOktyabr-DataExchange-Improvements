@@ -24,14 +24,22 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.ApplicationNet48", "KrasnyyOktyabr.ApplicationNet48\KrasnyyOktyabr.ApplicationNet48.csproj", "{083AFF11-BE9D-4CF7-AC94-3938CBFE81D1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{A6757DFB-77DB-49CF-9C79-0F5382669556} = {A6757DFB-77DB-49CF-9C79-0F5382669556}
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA} = {5D23E7EA-C9EC-422B-B08C-54A3B427CADA}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.ApplicationNet48.Tests", "KrasnyyOktyabr.ApplicationNet48.Tests\KrasnyyOktyabr.ApplicationNet48.Tests.csproj", "{1564DEC5-8E9B-45D2-AE8D-F4EEFBF47A86}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA} = {5D23E7EA-C9EC-422B-B08C-54A3B427CADA}
+		{5B89A672-4F7B-421E-8BB6-4F1BD65BCE8B} = {5B89A672-4F7B-421E-8BB6-4F1BD65BCE8B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.DataResolve", "KrasnyyOktyabr.DataResolve\KrasnyyOktyabr.DataResolve.csproj", "{A6757DFB-77DB-49CF-9C79-0F5382669556}"
 	ProjectSection(ProjectDependencies) = postProject
 		{37E4CEDF-064E-448D-BF23-1C5B3B44EC8F} = {37E4CEDF-064E-448D-BF23-1C5B3B44EC8F}
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA} = {5D23E7EA-C9EC-422B-B08C-54A3B427CADA}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.MsSql", "KrasnyyOktyabr.MsSql\KrasnyyOktyabr.MsSql.csproj", "{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +75,10 @@ Global
 		{A6757DFB-77DB-49CF-9C79-0F5382669556}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6757DFB-77DB-49CF-9C79-0F5382669556}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6757DFB-77DB-49CF-9C79-0F5382669556}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D23E7EA-C9EC-422B-B08C-54A3B427CADA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@ using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
 using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.PeriodServices;
 using Microsoft.Extensions.Logging;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers.Producers;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers;
 
 
 [ApiRoutePrefix("producers")]

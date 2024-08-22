@@ -35,6 +35,9 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+          <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+        </Reference>
         <Reference Include="mscorlib" />
         <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
           <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -74,6 +77,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="DataResolveService.cs" />
+        <Compile Include="Helpers\HttpClientHelper.cs" />
         <Compile Include="Helpers\JsonHelper.cs" />
         <Compile Include="IDataResolver.cs" />
         <Compile Include="IDataResolveService.cs" />
@@ -83,12 +87,17 @@
         <Compile Include="Resolvers\MsSqlSingleValueDataResolver.cs" />
     </ItemGroup>
     <ItemGroup>
+      <None Include="App.config" />
       <None Include="packages.config" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\KrasnyyOktyabr.ComV77Application\KrasnyyOktyabr.ComV77Application.csproj">
         <Project>{37e4cedf-064e-448d-bf23-1c5b3b44ec8f}</Project>
         <Name>KrasnyyOktyabr.ComV77Application</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\KrasnyyOktyabr.MsSql\KrasnyyOktyabr.MsSql.csproj">
+        <Project>{5d23e7ea-c9ec-422b-b08c-54a3b427cada}</Project>
+        <Name>KrasnyyOktyabr.MsSql</Name>
       </ProjectReference>
     </ItemGroup>
     <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>

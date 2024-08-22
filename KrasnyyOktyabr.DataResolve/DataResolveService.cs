@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using KrasnyyOktyabr.DataResolve.Resolvers;
+using KrasnyyOktyabr.DataResolve.Helpers;
+using KrasnyyOktyabr.MsSql;
 using static KrasnyyOktyabr.DataResolve.Helpers.JsonHelper;
 using static KrasnyyOktyabr.DataResolve.IDataResolveService;
 
@@ -59,7 +61,7 @@ public class DataResolveService : IDataResolveService
 
         if (credentialsUsername is not null)
         {
-            request.Headers.Authorization = GetAuthenticationHeaderValue(credentialsUsername, credentialsPassword);
+            request.Headers.Authorization = HttpClientHelper.GetAuthenticationHeaderValue(credentialsUsername, credentialsPassword);
         }
 
         return new(httpClient, request);
@@ -73,7 +75,7 @@ public class DataResolveService : IDataResolveService
 
         string connectionTypeString = GetOptional(args, "connectionType", string.Empty);
 
-        if (Enum.TryParse(connectionTypeString, out ConnectionType connectionType))
+        if (Enum.TryParse(connectionTypeString, out IMsSqlService.ConnectionType connectionType))
         {
             return new(msSqlService, connectionString, query, connectionType);
         }
