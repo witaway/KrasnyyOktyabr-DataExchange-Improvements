@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Confluent.Kafka;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services;
 
 public interface IKafkaService
 {

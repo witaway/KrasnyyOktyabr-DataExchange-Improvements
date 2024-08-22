@@ -1,25 +1,28 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Concurrent;
-using Confluent.Kafka;
-using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
-using KrasnyyOktyabr.ComV77Application;
-using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
-using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Threading;
-using KrasnyyOktyabr.ApplicationNet48.Logging;
 using System.IO;
 using System.Linq;
-using System;
-using KrasnyyOktyabr.ApplicationNet48.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Confluent.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Common.Extensions;
+using KrasnyyOktyabr.ApplicationNet48.Common.Logging;
+using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ProducerServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+using KrasnyyOktyabr.ApplicationNet48.Services;
+using KrasnyyOktyabr.ComV77Application;
+using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
+using Microsoft.Extensions.Logging;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.IScriptingService;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.V77ApplicationHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Services.V77ApplicationLogService;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.PeriodServices;
 
 public sealed class V77ApplicationPeriodProduceJobService(
     ILogger<V77ApplicationProducerService> logger,

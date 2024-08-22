@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Linq;
+namespace KrasnyyOktyabr.ApplicationNet48.Common.Extensions;
 
 /// <summary>
 /// See <see cref="https://github.com/dotnet/runtime/blob/5535e31a712343a63f5d7d796cd874e563e5ac14/src/libraries/System.Linq/src/System/Linq/Chunk.cs#L40C13-L50C48">Chunk.cs</see>.

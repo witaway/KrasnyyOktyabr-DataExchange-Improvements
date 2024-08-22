@@ -2,13 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.IScriptingService;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Tests;
+namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services;
 
 [TestClass]
 public class ScriptingOneScriptServiceTests

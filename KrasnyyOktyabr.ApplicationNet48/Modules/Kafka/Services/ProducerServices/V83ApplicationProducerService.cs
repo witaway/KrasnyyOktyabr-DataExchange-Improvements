@@ -4,19 +4,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+using KrasnyyOktyabr.ApplicationNet48.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Common.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.HttpClientHelper;
-using Confluent.Kafka;
-using System.Text.RegularExpressions;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ProducerServices;
 
 public sealed class V83ApplicationProducerService(
     IConfiguration configuration,

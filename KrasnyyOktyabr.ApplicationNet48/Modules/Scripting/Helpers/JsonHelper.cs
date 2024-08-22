@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Helpers;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.Helpers;
 
 public static class JsonHelper
 {

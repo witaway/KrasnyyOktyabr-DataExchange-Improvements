@@ -5,17 +5,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ProducerServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+using KrasnyyOktyabr.ApplicationNet48.Services;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.IScriptingService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IV77ApplicationLogService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.Kafka.V77ApplicationHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.V77ApplicationHelper;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka.Tests;
+namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services.Kafka;
 
 [TestClass]
 public class V77ApplicationProducerServiceTests

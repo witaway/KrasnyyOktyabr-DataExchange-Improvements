@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.PeriodServices;
 
 public interface IV77ApplicationPeriodProduceJobService : IAsyncDisposable
 {

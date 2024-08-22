@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.DependencyInjection;
-using KrasnyyOktyabr.ApplicationNet48.Filters;
+using KrasnyyOktyabr.ApplicationNet48.Modules.API.Filters;
 
 namespace KrasnyyOktyabr.ApplicationNet48;
 

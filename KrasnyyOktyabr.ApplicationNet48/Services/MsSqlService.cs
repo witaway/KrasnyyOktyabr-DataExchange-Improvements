@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
-using static KrasnyyOktyabr.ApplicationNet48.Logging.MsSqlLoggingHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Common.Logging.MsSqlLoggingHelper;
 using System.Data.SqlClient;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Services;

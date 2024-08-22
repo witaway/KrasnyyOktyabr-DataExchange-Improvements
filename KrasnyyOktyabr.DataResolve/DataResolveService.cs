@@ -9,13 +9,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
-using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
-using static KrasnyyOktyabr.ApplicationNet48.Services.JsonHelper;
-using static KrasnyyOktyabr.JsonTransform.Expressions.DataResolve.IDataResolveService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
-using static KrasnyyOktyabr.ApplicationNet48.Services.HttpClientHelper;
+using KrasnyyOktyabr.DataResolve.Resolvers;
+using static KrasnyyOktyabr.DataResolve.Helpers.JsonHelper;
+using static KrasnyyOktyabr.DataResolve.IDataResolveService;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
+namespace KrasnyyOktyabr.DataResolve;
 
 public class DataResolveService : IDataResolveService
 {

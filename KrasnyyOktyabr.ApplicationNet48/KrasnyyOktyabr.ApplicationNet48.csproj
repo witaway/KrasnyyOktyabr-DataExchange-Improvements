@@ -314,19 +314,14 @@
     <Compile Include="Models\RestartResult.cs" />
     <Compile Include="Models\V77ApplicationResolverRequest.cs" />
     <Compile Include="Modules\API\Attributes\ApiRoutePrefixAttribute.cs" />
-    <Compile Include="Modules\API\Controllers\Health\HealthController.cs" />
-    <Compile Include="Modules\API\Controllers\JsonTransform\JsonTransformController.cs" />
-    <Compile Include="Modules\API\Controllers\Kafka\KafkaController.cs" />
-    <Compile Include="Modules\API\Controllers\Resolvers\ResolveController.cs" />
-    <Compile Include="Modules\API\Controllers\Restart\RestartController.cs" />
-    <Compile Include="Modules\API\Controllers\Producers\ProducersController.cs" />
+    <Compile Include="Modules\API\Controllers\HealthController.cs" />
+    <Compile Include="Modules\API\Controllers\JsonTransformController.cs" />
+    <Compile Include="Modules\API\Controllers\KafkaController.cs" />
+    <Compile Include="Modules\API\Controllers\ProducersController.cs" />
+    <Compile Include="Modules\API\Controllers\ResolveController.cs" />
+    <Compile Include="Modules\API\Controllers\RestartController.cs" />
     <Compile Include="Modules\API\Filters\ValidateModelAttribute.cs" />
     <Compile Include="Modules\API\Helpers\ControllersHelper.cs" />
-    <Compile Include="Modules\DataResolver\DataResolveService.cs" />
-    <Compile Include="Modules\DataResolver\Helpers\JsonHelper.cs" />
-    <Compile Include="Modules\DataResolver\Resolvers\ComV77ApplicationResolver.cs" />
-    <Compile Include="Modules\DataResolver\Resolvers\HttpDataResolver.cs" />
-    <Compile Include="Modules\DataResolver\Resolvers\MsSqlSingleValueDataResolver.cs" />
     <Compile Include="Modules\HealthCheckers\ComV77ApplicationConnectionFactoryHealthChecker.cs" />
     <Compile Include="Modules\HealthCheckers\MsSqlConsumerServiceHealthChecker.cs" />
     <Compile Include="Modules\HealthCheckers\V77ApplicationConsumerServiceHealthChecker.cs" />
@@ -392,6 +387,10 @@
     <ProjectReference Include="..\KrasnyyOktyabr.ComV77Application\KrasnyyOktyabr.ComV77Application.csproj">
       <Project>{37E4CEDF-064E-448D-BF23-1C5B3B44EC8F}</Project>
       <Name>KrasnyyOktyabr.ComV77Application</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KrasnyyOktyabr.DataResolve\KrasnyyOktyabr.DataResolve.csproj">
+      <Project>{a6757dfb-77db-49cf-9c79-0f5382669556}</Project>
+      <Name>KrasnyyOktyabr.DataResolve</Name>
     </ProjectReference>
     <ProjectReference Include="..\KrasnyyOktyabr.JsonTransform\KrasnyyOktyabr.JsonTransform.csproj">
       <Project>{324E7F72-9FEA-4A40-BF1A-4C9558BA49AD}</Project>

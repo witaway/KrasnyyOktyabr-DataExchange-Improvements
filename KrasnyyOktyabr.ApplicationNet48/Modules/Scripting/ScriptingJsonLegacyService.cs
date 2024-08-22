@@ -11,10 +11,10 @@ using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.IScriptingService;
 using static KrasnyyOktyabr.JsonTransform.JsonHelper;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 
 public sealed class ScriptingJsonLegacyService(IJsonAbstractExpressionFactory factory, ILogger<ScriptingJsonLegacyService> logger) : IScriptingService
 {

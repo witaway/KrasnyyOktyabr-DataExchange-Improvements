@@ -2,9 +2,8 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
+namespace KrasnyyOktyabr.DataResolve.Resolvers;
 
 /// <exception cref="ArgumentNullException"></exception>
 public class HttpDataResolver(HttpClient httpClient, HttpRequestMessage request) : IDataResolver

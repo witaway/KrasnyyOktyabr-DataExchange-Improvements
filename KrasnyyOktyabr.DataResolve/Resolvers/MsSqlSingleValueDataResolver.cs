@@ -3,10 +3,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
+namespace KrasnyyOktyabr.DataResolve.Resolvers;
 
 /// <exception cref="ArgumentNullException"></exception>
 public class MsSqlSingleValueDataResolver(IMsSqlService service, string connectionString, string query, ConnectionType? connectionType) : IDataResolver

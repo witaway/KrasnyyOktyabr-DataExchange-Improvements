@@ -5,16 +5,16 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Newtonsoft.Json;
-using KrasnyyOktyabr.ApplicationNet48.Health;
 using KrasnyyOktyabr.ApplicationNet48.Models.Health;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
-using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
-using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.HealthCheckers;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ConsumerServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ProducerServices;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Newtonsoft.Json;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers.Health;
 
 public class HealthController(HealthCheckService healthCheckService) : ApiController
 {

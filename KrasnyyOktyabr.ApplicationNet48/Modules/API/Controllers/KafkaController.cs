@@ -7,13 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Confluent.Kafka;
-using KrasnyyOktyabr.ApplicationNet48.Logging;
+using KrasnyyOktyabr.ApplicationNet48.Common.Logging;
 using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
-using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Controllers.ControllersHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.API.Helpers.ControllersHelper;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers.Kafka;
 
 [ApiRoutePrefix("kafka")]
 public class KafkaController(IKafkaService kafkaService, ILogger<KafkaController> logger) : ApiController

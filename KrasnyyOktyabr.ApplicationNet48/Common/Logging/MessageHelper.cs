@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Logging;
+namespace KrasnyyOktyabr.ApplicationNet48.Common.Logging;
 
 public static class MessageHelper
 {

@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services;
+using KrasnyyOktyabr.ApplicationNet48.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using ConfigurationBuilder = Microsoft.Extensions.Configuration.ConfigurationBuilder;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka.Tests;
+namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services.Kafka;
 
 [TestClass]
 public class KafkaServiceTests

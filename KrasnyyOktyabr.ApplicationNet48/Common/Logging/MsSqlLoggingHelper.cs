@@ -1,7 +1,7 @@
-﻿using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using static KrasnyyOktyabr.ApplicationNet48.Services.IMsSqlService;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Logging;
+namespace KrasnyyOktyabr.ApplicationNet48.Common.Logging;
 
 public static class MsSqlLoggingHelper
 {

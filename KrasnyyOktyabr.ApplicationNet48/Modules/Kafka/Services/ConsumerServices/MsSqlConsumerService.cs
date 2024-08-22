@@ -5,15 +5,17 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Confluent.Kafka;
-using KrasnyyOktyabr.ApplicationNet48.Logging;
+using KrasnyyOktyabr.ApplicationNet48.Common.Logging;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+using KrasnyyOktyabr.ApplicationNet48.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Services.IScriptingService;
+using static KrasnyyOktyabr.ApplicationNet48.Modules.Scripting.IScriptingService;
 using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ConsumerServices;
 
 public sealed class MsSqlConsumerService(
     IConfiguration configuration,

@@ -1,8 +1,8 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Logging.MessageHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Common.Logging.MessageHelper;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Logging;
+namespace KrasnyyOktyabr.ApplicationNet48.Common.Logging;
 
 public static class KafkaLoggingHelper
 {

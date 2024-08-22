@@ -10,13 +10,15 @@ using System.Threading.Tasks;
 using Confluent.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Configuration.Kafka;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
+using KrasnyyOktyabr.ApplicationNet48.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static KrasnyyOktyabr.ApplicationNet48.Logging.KafkaLoggingHelper;
+using static KrasnyyOktyabr.ApplicationNet48.Common.Logging.KafkaLoggingHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.HttpClientHelper;
 using static KrasnyyOktyabr.ApplicationNet48.Services.TimeHelper;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ConsumerServices;
 
 public sealed partial class V83ApplicationConsumerService(
     IConfiguration configuration,

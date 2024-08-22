@@ -1,6 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using KrasnyyOktyabr.ApplicationNet48.Services;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Tests;
+namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services;
 
 [TestClass]
 public class TransliterationServiceTests

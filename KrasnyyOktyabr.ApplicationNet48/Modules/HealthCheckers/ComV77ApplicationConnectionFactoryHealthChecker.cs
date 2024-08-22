@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using KrasnyyOktyabr.ComV77Application;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Health;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.HealthCheckers;
 
 public class ComV77ApplicationConnectionFactoryHealthChecker(IComV77ApplicationConnectionFactory comV77ApplicationConnectionFactory) : IHealthCheck
 {

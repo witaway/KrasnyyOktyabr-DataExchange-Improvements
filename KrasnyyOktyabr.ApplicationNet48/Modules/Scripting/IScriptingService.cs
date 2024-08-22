@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 
 public interface IScriptingService
 {

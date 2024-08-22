@@ -3,7 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using KrasnyyOktyabr.ApplicationNet48.Models;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
-using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ConsumerServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ProducerServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Scripting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

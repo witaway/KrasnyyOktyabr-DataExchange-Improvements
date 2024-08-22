@@ -1,8 +1,11 @@
-﻿using KrasnyyOktyabr.ApplicationNet48.Health;
+﻿using System.Net.Http;
 using KrasnyyOktyabr.ApplicationNet48.Models.Kafka;
+using KrasnyyOktyabr.ApplicationNet48.Modules.HealthCheckers;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ConsumerServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.PeriodServices;
+using KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.Services.ProducerServices;
 using KrasnyyOktyabr.ApplicationNet48.Services;
-using KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
-using KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+using KrasnyyOktyabr.DataResolve;
 using Microsoft.Extensions.DependencyInjection;
 using static KrasnyyOktyabr.ComV77Application.IComV77ApplicationConnectionFactory;
 

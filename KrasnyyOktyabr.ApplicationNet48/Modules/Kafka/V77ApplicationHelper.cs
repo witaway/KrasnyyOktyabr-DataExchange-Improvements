@@ -2,9 +2,10 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using KrasnyyOktyabr.ApplicationNet48.Services;
 using Microsoft.Extensions.Logging;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Kafka;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka;
 
 public static class V77ApplicationHelper
 {

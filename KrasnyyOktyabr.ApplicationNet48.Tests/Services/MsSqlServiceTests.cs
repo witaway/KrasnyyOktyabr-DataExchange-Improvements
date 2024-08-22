@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static KrasnyyOktyabr.ApplicationNet48.Services.MsSqlService;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services.Tests;
+namespace KrasnyyOktyabr.ApplicationNet48.Tests.Services;
 
 [TestClass]
 public class MsSqlServiceTests

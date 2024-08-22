@@ -1,4 +1,4 @@
-﻿using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
+﻿using KrasnyyOktyabr.DataResolve;
 using Newtonsoft.Json.Linq;
 using static KrasnyyOktyabr.JsonTransform.Expressions.Creation.JsonExpressionFactoriesHelper;
 

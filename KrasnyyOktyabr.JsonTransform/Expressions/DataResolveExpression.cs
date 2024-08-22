@@ -1,4 +1,4 @@
-﻿using KrasnyyOktyabr.JsonTransform.Expressions.DataResolve;
+﻿using KrasnyyOktyabr.DataResolve;
 
 namespace KrasnyyOktyabr.JsonTransform.Expressions;
 

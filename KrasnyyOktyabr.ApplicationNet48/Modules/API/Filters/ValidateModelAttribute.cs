@@ -1,9 +1,9 @@
-﻿using System.Net.Http;
-using System.Net;
+﻿using System.Net;
+using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Filters;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Filters;
 
 public class ValidateModelAttribute : ActionFilterAttribute 
 {

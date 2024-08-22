@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using KrasnyyOktyabr.ApplicationNet48.Models;
 using KrasnyyOktyabr.ApplicationNet48.Modules.API.Attributes;
-using KrasnyyOktyabr.ApplicationNet48.Services.DataResolve;
 using KrasnyyOktyabr.ComV77Application;
 using KrasnyyOktyabr.ComV77Application.Contracts.Configuration;
+using KrasnyyOktyabr.DataResolve;
+using KrasnyyOktyabr.DataResolve.Resolvers;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Controllers;
+namespace KrasnyyOktyabr.ApplicationNet48.Modules.API.Controllers.Resolvers;
 
 [ApiRoutePrefix("resolve")]
 public class ResolveController(IComV77ApplicationConnectionFactory connectionFactory) : ApiController

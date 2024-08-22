@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json.Linq;
 
-namespace KrasnyyOktyabr.ApplicationNet48.Services;
+namespace KrasnyyOktyabr.DataResolve.Helpers;
 
 public static class JsonHelper
 {
