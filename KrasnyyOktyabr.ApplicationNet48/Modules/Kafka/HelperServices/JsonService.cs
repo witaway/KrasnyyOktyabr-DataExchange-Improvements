@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace KrasnyyOktyabr.ApplicationNet48.Modules.Kafka.HelperServices;
 
-public class JsonService
+public class JsonService : IJsonService
 {
     public string Serialize(object item)
     {

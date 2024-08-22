@@ -102,6 +102,8 @@ public class WebApiApplication : HttpApplication
         builder.Services.AddSingleton<IMsSqlService, MsSqlService>();
 
         builder.Services.AddSingleton<IWmiService, WmiService>();
+        
+        builder.Services.AddSingleton<IJsonService, JsonService>();
 
         builder.Services.AddSingleton<IScriptingService, ScriptingJsonTransformService>();
         
