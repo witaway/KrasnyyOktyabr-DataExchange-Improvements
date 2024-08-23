@@ -3,6 +3,7 @@ using ScriptEngine;
 using ScriptEngine.Machine.Contexts;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using OneScript.Language;
 using MyService.BusinessLogic.Api;
@@ -74,12 +75,37 @@ namespace MyService.BusinessLogic.ScriptedWorker
         /// Создать из файлового скрипта
         /// </summary>
         /// <param name="engine"></param>
-        /// <param name="processingScript"></param>
+        /// <param name="scriptFileName"></param>
         /// <returns></returns>
-        public static Worker Create(ScriptingEngine engine, string processingScript)
+        public static Worker CreateFromFile(ScriptingEngine engine, string scriptFileName)
         {
-            var code = engine.Loader.FromString(processingScript);
+            var code = engine.Loader.FromFile(scriptFileName);
             return Create(engine, code);
+        }
+        
+        /// <summary>
+        /// Создать из строки текста
+        /// </summary>
+        /// <param name="engine"></param>
+        /// <param name="scriptFileName"></param>
+        /// <returns></returns>
+        public static Worker CreateFromString(ScriptingEngine engine, string scriptContent)
+        {
+            var code = engine.Loader.FromString(scriptContent);
+            return Create(engine, code);
+        }
+        
+        /// <summary>
+        /// Создать из текстового потока
+        /// </summary>
+        /// <param name="engine"></param>
+        /// <param name="scriptFileName"></param>
+        /// <returns></returns>
+        public static Worker CreateFromStream(ScriptingEngine engine, Stream stream)
+        {
+            using var streamReader = new StreamReader(stream, Encoding.UTF8, true, 4096, true);
+            var scriptContent = streamReader.ReadToEnd();
+            return CreateFromString(engine, scriptContent);
         }
 
         /// <summary>

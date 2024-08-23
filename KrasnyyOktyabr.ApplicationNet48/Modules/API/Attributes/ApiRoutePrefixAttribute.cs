@@ -6,3 +6,4 @@ public class ApiRoutePrefixAttribute(string prefix) : RoutePrefixAttribute(prefi
 {
     public override string Prefix => "api/" + base.Prefix;
 }
+

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using KrasnyyOktyabr.Scripting.Core;
@@ -19,29 +21,35 @@ public class ScriptingOneScriptService : IScriptingService
 
     public async ValueTask RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken)
     {
-        using var outputStreamWriter = new StreamWriter(outputStream);
-        using var streamReader = new StreamReader(inputStream);
+        using var inputStreamReader = new StreamReader(inputStream, Encoding.UTF8, true, 512, true);
+        using var outputStreamWriter = new StreamWriter(outputStream, Encoding.UTF8, 512, true);
         
+        // EP 1. Configure application host and input/output capabilities.
         var host = new DefaultAppHost((message, messageStatusEnum) =>
         {
+            // Here ReSharper assumes captured variable outputStreamWriter
+            // Could be used after disposal. It's not true in the case.
+            // ReSharper disable AccessToDisposedClosure
             outputStreamWriter.WriteLine(message);
+            outputStreamWriter.FlushAsync();
+            // ReSharper restore AccessToDisposedClosure
         });
         
+        // EP 2. Initialize scripting engine with given host
         var engine = EngineProvider.CreateEngine(host);
         engine.Initialize();
 
-        string code = await streamReader.ReadToEndAsync();
+        // EP 3. Initialize worker
+        var worker = Worker.CreateFromStream(engine, inputStream);
         
-        var worker = Worker.Create(engine, code);
-
+        // EP 4. Run worker
         var success = worker.ProccessWeather();
-
+        
+        // EP 5. Check success
         if (success)
-            await outputStreamWriter.WriteLineAsync("УСПЕХ!");
+            await outputStreamWriter.WriteLineAsync("\nРЕЗУЛЬТАТ ВЫПОЛНЕНИЯ: УСПЕХ!");
         else 
-            await outputStreamWriter.WriteLineAsync("НЕ УСПЕХ :(");
-
-        await outputStreamWriter.FlushAsync();
+            await outputStreamWriter.WriteLineAsync("\\nРЕЗУЛЬТАТ ВЫПОЛНЕНИЯ: НЕ УСПЕХ :(");
     }
 
     public ValueTask<List<JsonTransformMsSqlResult>> RunJsonTransformOnConsumedMessageMsSqlAsync(string instructionName, string message, string tablePropertyName,
