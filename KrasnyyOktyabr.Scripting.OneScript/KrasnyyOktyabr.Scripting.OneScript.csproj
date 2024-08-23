@@ -75,6 +75,7 @@
         <Compile Include="Engine\EngineProvider.cs" />
         <Compile Include="Engine\IMessager.cs" />
         <Compile Include="Engine\OneScriptAdoptionContext.cs" />
+        <Compile Include="Logic\Api\JsonData.cs" />
         <Compile Include="Logic\Api\WeatherData.cs" />
         <Compile Include="Logic\Api\WeatherProvider.cs" />
         <Compile Include="Logic\OperationCancelledException.cs" />

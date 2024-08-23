@@ -10,7 +10,7 @@ using ScriptEngine;
 using ScriptEngine.HostedScript;
 using ScriptEngine.HostedScript.Library;
 
-namespace MyService.OneScriptBridge
+namespace KrasnyyOktyabr.Scripting.OneScript.Engine
 {
     /// <summary>
     /// Основной инициализатор движка OneScript

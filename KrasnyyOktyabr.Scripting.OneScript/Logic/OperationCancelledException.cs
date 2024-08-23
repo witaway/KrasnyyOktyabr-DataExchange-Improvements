@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace MyService.BusinessLogic
+namespace KrasnyyOktyabr.Scripting.OneScript.Logic
 {
     public class OperationCancelledException : ApplicationException
     {

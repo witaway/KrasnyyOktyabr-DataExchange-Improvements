@@ -7,7 +7,7 @@ at http://mozilla.org/MPL/2.0/.
 
 using ScriptEngine.HostedScript.Library;
 
-namespace MyService.OneScriptBridge
+namespace KrasnyyOktyabr.Scripting.OneScript.Engine
 {
     /// <summary>
     /// Абстракция для вывода куда-нибудь сообщений от Сообщить

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Text;
 using KrasnyyOktyabr.JsonTransform.Expressions;
 using KrasnyyOktyabr.JsonTransform.Expressions.Creation;
 using KrasnyyOktyabr.Scripting.Core;
@@ -10,9 +11,12 @@ using static KrasnyyOktyabr.JsonTransform.Helpers.JsonHelper;
 
 namespace KrasnyyOktyabr.JsonTransform;
 
-public sealed class ScriptingJsonTransformService(IJsonAbstractExpressionFactory factory, ILogger<ScriptingJsonTransformService> logger) : IScriptingService
+public sealed class ScriptingJsonTransformService(
+    IJsonAbstractExpressionFactory factory,
+    ILogger<ScriptingJsonTransformService> logger) : IScriptingService
 {
-    public static string ConsumerInstructionsPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Properties", "ConsumerInstructions");
+    public static string ConsumerInstructionsPath =>
+        Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Properties", "ConsumerInstructions");
 
     public static string InstructionsPropertyName => "instructions";
 
@@ -30,50 +34,59 @@ public sealed class ScriptingJsonTransformService(IJsonAbstractExpressionFactory
     }
 
     /// <param name="outputStream">Is written synchronously.</param>
-    public async ValueTask RunJsonTransformAsync(Stream inputStream, Stream outputStream, CancellationToken cancellationToken)
+    public async ValueTask RunScriptArbitraryAsync(Stream scriptStream, Stream inputStream, Stream outputStream,
+        CancellationToken cancellationToken)
     {
-        JObject? request = null;
+        // EP1. Load script JSON from stream
+        using var scriptStreamReader = new StreamReader(
+            scriptStream,
+            Encoding.UTF8,
+            true, 1024, true
+        );
 
-        using (StreamReader inputStreamReader = new(inputStream))
-        {
-            request = await JObject.LoadAsync(new JsonTextReader(inputStreamReader), cancellationToken);
-        }
+        JArray script = await JArray.LoadAsync(
+            new JsonTextReader(scriptStreamReader),
+            cancellationToken
+        );
+        
+        // EP2. Load input data from stream
+        using var inputStreamReader = new StreamReader(
+            inputStream,
+            Encoding.UTF8,
+            true, 1024, true
+        );
 
-        if (!request.ContainsKey(InstructionsPropertyName))
-        {
-            throw new ArgumentException($"'{InstructionsPropertyName}' property missing");
-        }
-
-        if (!request.ContainsKey(InputPropertyName))
-        {
-            throw new ArgumentException($"'{InputPropertyName}' property missing");
-        }
-
-        IExpression<Task> expression = factory.Create<IExpression<Task>>(request[InstructionsPropertyName]!);
-
-        JObject input = JObject.FromObject(request[InputPropertyName] ?? throw new ArgumentException($"'{InputPropertyName}' is empty"));
-
+        JObject input = await JObject.LoadAsync(
+            new JsonTextReader(inputStreamReader),
+            cancellationToken
+        );
+        
+        // EP3. Build expression
+        IExpression<Task> expression = factory.Create<IExpression<Task>>(script);
+        
+        // EP4. Build context from input
         Context context = new(input);
 
+        // EP5. Run script on context
         await expression.InterpretAsync(context, cancellationToken);
 
-        JArray result = [];
-
-        foreach (JObject item in context.OutputGet())
-        {
-            result.Add(Unflatten(item));
-        }
+        // EP6. Format result
+        JArray result = JArray.FromObject(context.OutputGet().Select(Unflatten));
+        
+        // JArray result = [];
+        // foreach (JObject item in context.OutputGet())
+        // {
+        //     result.Add(Unflatten(item));
+        // }
 
         StreamWriter writer = new(outputStream);
-
-        // Writes to stream synchronously
         JsonSerializer.CreateDefault().Serialize(writer, result);
 
         await writer.FlushAsync();
     }
 
     /// <exception cref="ArgumentNullException"></exception>
-    public async ValueTask<List<JsonTransformMsSqlResult>> RunJsonTransformOnConsumedMessageMsSqlAsync(
+    public async ValueTask<List<JsonTransformMsSqlResult>> RunScriptOnConsumedMessageMsSqlAsync(
         string instructionName,
         string jsonObject,
         string tablePropertyName,
@@ -89,7 +102,8 @@ public sealed class ScriptingJsonTransformService(IJsonAbstractExpressionFactory
         foreach (JObject jsonTransformResult in jsonTransformResults)
         {
             // Extract table name
-            string tableName = jsonTransformResult[tablePropertyName]?.Value<string>() ?? throw new TablePropertyNotFoundException(tablePropertyName);
+            string tableName = jsonTransformResult[tablePropertyName]?.Value<string>() ??
+                               throw new TablePropertyNotFoundException(tablePropertyName);
             jsonTransformResult.Remove(tablePropertyName);
 
             results.Add(new JsonTransformMsSqlResult(
@@ -102,7 +116,7 @@ public sealed class ScriptingJsonTransformService(IJsonAbstractExpressionFactory
     }
 
     /// <exception cref="ArgumentNullException"></exception>
-    public async ValueTask<List<string>> RunJsonTransformOnConsumedMessageVApplicationAsync(
+    public async ValueTask<List<string>> RunScriptOnConsumedMessageVApplicationAsync(
         string instructionName,
         string jsonObject,
         CancellationToken cancellationToken = default)
@@ -168,7 +182,7 @@ public sealed class ScriptingJsonTransformService(IJsonAbstractExpressionFactory
             throw new ArgumentException("Failed to parse JSON", ex);
         }
     }
-    
+
     private static void AddProperties(JObject jObject, Dictionary<string, object?> propertiesToAdd)
     {
         foreach (KeyValuePair<string, object?> property in propertiesToAdd)
@@ -176,17 +190,18 @@ public sealed class ScriptingJsonTransformService(IJsonAbstractExpressionFactory
             jObject[property.Key] = JToken.FromObject(property.Value ?? JValue.CreateNull());
         }
     }
-    
+
     private async ValueTask<IExpression<Task>> GetExpressionAsync(string instructionName)
     {
         if (_instructionNamesExpressions.TryGetValue(instructionName, out IExpression<Task>? cachedExpression))
         {
             return cachedExpression;
         }
-        
+
         string instructionFilePath = Path.Combine(ConsumerInstructionsPath, instructionName);
 
-        logger.LogTrace("{InstructionName} not found in cache, loading from '{FilePath}'", instructionName, instructionFilePath);
+        logger.LogTrace("{InstructionName} not found in cache, loading from '{FilePath}'", instructionName,
+            instructionFilePath);
 
         JToken instructions = await LoadInstructionAsync(instructionFilePath);
 
@@ -204,11 +219,13 @@ public sealed class ScriptingJsonTransformService(IJsonAbstractExpressionFactory
         return await JToken.LoadAsync(new JsonTextReader(reader));
     }
 
-    public class TablePropertyNotFoundException(string tablePropertyName) : Exception($"'{tablePropertyName}' property not found")
+    public class TablePropertyNotFoundException(string tablePropertyName)
+        : Exception($"'{tablePropertyName}' property not found")
     {
     }
 
-    public class JsonTransformException(string instructionName, Exception exception) : Exception($"At '{instructionName}'", exception)
+    public class JsonTransformException(string instructionName, Exception exception)
+        : Exception($"At '{instructionName}'", exception)
     {
     }
 }

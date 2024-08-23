@@ -189,7 +189,7 @@ public sealed partial class V83ApplicationConsumerService(
             throw new InstructionNotSpecifiedException(topic);
         }
 
-        List<string> jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageVApplicationAsync(
+        List<string> jsonTransformResults = await jsonService.RunScriptOnConsumedMessageVApplicationAsync(
             instructionName,
             message,
             cancellationToken);

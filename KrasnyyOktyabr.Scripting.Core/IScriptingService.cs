@@ -20,14 +20,15 @@ public interface IScriptingService
     /// <paramref name="outputStream"/> may be written synchronously.
     /// </remarks>
     /// <exception cref="Exception"></exception>
-    ValueTask RunJsonTransformAsync(
+    ValueTask RunScriptArbitraryAsync(
+        Stream scriptStream,
         Stream inputStream,
         Stream outputStream,
         CancellationToken cancellationToken
     );
 
     /// <exception cref="Exception"></exception>
-    ValueTask<List<JsonTransformMsSqlResult>> RunJsonTransformOnConsumedMessageMsSqlAsync(
+    ValueTask<List<JsonTransformMsSqlResult>> RunScriptOnConsumedMessageMsSqlAsync(
         string instructionName,
         string message,
         string tablePropertyName,
@@ -35,7 +36,7 @@ public interface IScriptingService
     );
 
     /// <exception cref="Exception"></exception>
-    ValueTask<List<string>> RunJsonTransformOnConsumedMessageVApplicationAsync(
+    ValueTask<List<string>> RunScriptOnConsumedMessageVApplicationAsync(
         string instructionName,
         string message,
         CancellationToken cancellationToken

@@ -1,29 +1,26 @@
-﻿using ScriptEngine.Machine.Contexts;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using ScriptEngine.Machine.Contexts;
 
-namespace MyService.BusinessLogic.Api
+namespace KrasnyyOktyabr.Scripting.OneScript.Logic.Api;
+
+[ContextClass("СервисПогоды", "WeatherService")]
+public class WeatherProvider : AutoContext<WeatherProvider>
 {
-    [ContextClass("СервисПогоды", "WeatherService")]
-    public class WeatherProvider : AutoContext<WeatherProvider>
+    private readonly Random random = new Random();
+
+    [ContextMethod("ПолучитьПогоду", "GetWeather")]
+    public WeatherData GetWeather()
     {
-        private readonly Random random = new Random();
-
-        [ContextMethod("ПолучитьПогоду", "GetWeather")]
-        public WeatherData GetWeather()
+        return new WeatherData
         {
-            return new WeatherData
-            {
-                Temperature = GetRandomNumber(-20, 45),
-                Humidity = GetRandomNumber(30, 100),
-                Pressure = GetRandomNumber(740, 800)
-            };
-        }
+            Temperature = GetRandomNumber(-20, 45),
+            Humidity = GetRandomNumber(30, 100),
+            Pressure = GetRandomNumber(740, 800)
+        };
+    }
 
-        private decimal GetRandomNumber(int min, int max)
-        {
-            return (decimal)(random.Next(min, max) * random.NextDouble());
-        }
+    private decimal GetRandomNumber(int min, int max)
+    {
+        return (decimal)(random.Next(min, max) * random.NextDouble());
     }
 }

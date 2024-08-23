@@ -1,15 +1,13 @@
-﻿using ScriptEngine.Machine;
-using ScriptEngine;
-using ScriptEngine.Machine.Contexts;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Text;
-using OneScript.Language;
-using MyService.BusinessLogic.Api;
+using KrasnyyOktyabr.Scripting.OneScript.Logic.Api;
+using ScriptEngine;
 using ScriptEngine.Environment;
+using ScriptEngine.Machine;
+using ScriptEngine.Machine.Contexts;
 
-namespace MyService.BusinessLogic.ScriptedWorker
+namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
 {
     [ContextClass("Обработчик", "Worker")]
     public class Worker : AutoScriptDrivenObject<Worker>

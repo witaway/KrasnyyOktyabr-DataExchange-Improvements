@@ -185,7 +185,7 @@ public sealed class MsSqlConsumerService(
             throw new InstructionNotSpecifiedException(topic);
         }
 
-        List<JsonTransformMsSqlResult> jsonTransformResults = await jsonService.RunJsonTransformOnConsumedMessageMsSqlAsync(
+        List<JsonTransformMsSqlResult> jsonTransformResults = await jsonService.RunScriptOnConsumedMessageMsSqlAsync(
             instructionName,
             message,
             settings.TablePropertyName,

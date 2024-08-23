@@ -9,7 +9,7 @@ using System;
 using ScriptEngine.HostedScript;
 using ScriptEngine.HostedScript.Library;
 
-namespace MyService.OneScriptBridge
+namespace KrasnyyOktyabr.Scripting.OneScript.Engine
 {
     /// <summary>
     /// Реализация хоста по умолчанию. Ничего не умеет, кроме как пересылать сообщения в абстрактный IMessager

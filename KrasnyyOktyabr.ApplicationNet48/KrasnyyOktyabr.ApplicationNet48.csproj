@@ -320,6 +320,7 @@
     <Compile Include="Modules\API\Attributes\ApiRoutePrefixAttribute.cs" />
     <Compile Include="Modules\API\Controllers\HealthController.cs" />
     <Compile Include="Modules\API\Controllers\JsonTransformController.cs" />
+    <Compile Include="Modules\API\Controllers\OneScriptController.cs" />
     <Compile Include="Modules\API\Controllers\KafkaController.cs" />
     <Compile Include="Modules\API\Controllers\ProducersController.cs" />
     <Compile Include="Modules\API\Controllers\ResolveController.cs" />

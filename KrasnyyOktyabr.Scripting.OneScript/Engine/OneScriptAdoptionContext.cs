@@ -14,7 +14,7 @@ using ScriptEngine.HostedScript.Library;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
 
-namespace MyService.OneScriptBridge
+namespace KrasnyyOktyabr.Scripting.OneScript.Engine
 {
     /// <summary>
     /// Замена типового глобального контекста. Отключает возможность запускать из скриптов внешние приложения
