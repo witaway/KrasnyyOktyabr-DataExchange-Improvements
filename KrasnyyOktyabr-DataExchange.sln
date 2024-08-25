@@ -47,6 +47,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.Scripting.OneScript", "KrasnyyOktyabr.Scripting.OneScript\KrasnyyOktyabr.Scripting.OneScript.csproj", "{83B4474D-BAA9-4588-BD4F-DB9E49F45932}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86} = {3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}
+		{324E7F72-9FEA-4A40-BF1A-4C9558BA49AD} = {324E7F72-9FEA-4A40-BF1A-4C9558BA49AD}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KrasnyyOktyabr.Scripting.Core", "KrasnyyOktyabr.Scripting.Core\KrasnyyOktyabr.Scripting.Core.csproj", "{3F4FF9C8-C219-43FE-AEC7-AC5B1D5A1D86}"

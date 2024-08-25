@@ -79,6 +79,7 @@
         <Compile Include="Logic\Api\JsonData.Getters.cs" />
         <Compile Include="Logic\Api\JsonData.Setters.cs" />
         <Compile Include="Logic\Api\JsonDataTypeEnum.cs" />
+        <Compile Include="Logic\Api\ValueTableLegacy.cs" />
         <Compile Include="Logic\Helpers\JArrayExtendLengthExtension.cs" />
         <Compile Include="Logic\OperationCancelledException.cs" />
         <Compile Include="Logic\ScriptedWorker\Worker.cs" />
@@ -89,6 +90,10 @@
       <ProjectReference Include="..\KrasnyyOktyabr.Scripting.Core\KrasnyyOktyabr.Scripting.Core.csproj">
         <Project>{3f4ff9c8-c219-43fe-aec7-ac5b1d5a1d86}</Project>
         <Name>KrasnyyOktyabr.Scripting.Core</Name>
+      </ProjectReference>
+      <ProjectReference Include="..\KrasnyyOktyabr.Scripting.JsonTransform\KrasnyyOktyabr.Scripting.JsonTransform.csproj">
+        <Project>{324e7f72-9fea-4a40-bf1a-4c9558ba49ad}</Project>
+        <Name>KrasnyyOktyabr.Scripting.JsonTransform</Name>
       </ProjectReference>
     </ItemGroup>
     <ItemGroup>
