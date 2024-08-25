@@ -1,20 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using KrasnyyOktyabr.Scripting.OneScript.Logic.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OneScript.Language.LexicalAnalysis;
-using ScriptEngine.HostedScript.Library;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
 
 namespace KrasnyyOktyabr.Scripting.OneScript.Logic.Api;
 
 [ContextClass("Данные", "Data")]
-public class JsonData : AutoContext<JsonData>
+public partial class JsonData : AutoContext<JsonData>
 {
-    private JContainer _root;
-    private JsonDataTypeEnum? _checkedTypeForIndexOperatorAccess = null;
+    protected readonly List<DataType> _oscriptPlainDataTypes =
+    [
+        DataType.Boolean,
+        DataType.Date,
+        DataType.Number,
+        DataType.String
+    ];
+
+    protected JContainer _root { get; set; }
+
+    protected JsonDataTypeEnum? _checkedTypeForIndexOperatorAccess = null;
 
     public JsonData(
         Stream inputStream,
@@ -78,100 +87,7 @@ public class JsonData : AutoContext<JsonData>
         _checkedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
     }
 
-    public override IValue GetIndexedValue(IValue index)
-    {
-        return index.DataType switch
-        {
-            DataType.String => GetSingleValueByPath(
-                index.AsString(),
-                _checkedTypeForIndexOperatorAccess
-            ),
-
-            DataType.Number => GetSingleValueByIndex(
-                (int)index.AsNumber(),
-                _checkedTypeForIndexOperatorAccess
-            ),
-
-            DataType.Enumeration => new JsonData(
-                _root,
-                false,
-                ContextValuesMarshaller.CastToCLRObject<JsonDataTypeEnum>(index)
-            ),
-
-            _ => base.GetIndexedValue(index)
-        };
-    }
-
-    [ContextMethod("Получить", "Get")]
-    public IValue GetSingleValueByPath(IValue pathOrIndex, JsonDataTypeEnum? checkedType = null)
-    {
-        switch (pathOrIndex.DataType)
-        {
-            case DataType.String:
-            {
-                var path = pathOrIndex.AsString();
-                return GetSingleValueByPath(path, checkedType);
-            }
-            case DataType.Number:
-            {
-                var index = (int)pathOrIndex.AsNumber();
-                return GetSingleValueByIndex(index, checkedType);
-            }
-            default:
-                throw new RuntimeException("Данные.Получить ожидает получить строку или число как первый аргумент");
-        }
-    }
-
-    private IValue GetSingleValueByPath(string path, JsonDataTypeEnum? checkedType = null)
-    {
-        var jResult = _root.SelectToken(path);
-
-        if (jResult is null)
-        {
-            throw new RuntimeException(
-                "Невозможно получить JSON-значение: данному пути не соответствует ни один токен"
-            );
-        }
-
-        if (checkedType is not null && !CheckJsonType(jResult, checkedType.Value))
-        {
-            throw new RuntimeException(
-                $"Невозможно получить JSON-значение: полученный тип ({jResult.Type}) не соответствует ожидаемому ({checkedType})"
-            );
-        }
-
-        return IntoOneScriptType(jResult);
-    }
-
-    private IValue GetSingleValueByIndex(int index, JsonDataTypeEnum? checkedType = null)
-    {
-        if (_root is not JArray rootArray)
-        {
-            throw new RuntimeException(
-                "Невозможно получить JSON-значение по индексу: объект не является массивом"
-            );
-        }
-
-        var jResult = rootArray[index];
-
-        if (jResult is null)
-        {
-            throw new RuntimeException(
-                "Невозможно получить JSON-значение: данному пути не соответствует ни один токен"
-            );
-        }
-
-        if (checkedType is not null && !CheckJsonType(jResult, checkedType.Value))
-        {
-            throw new RuntimeException(
-                $"Невозможно получить JSON-значение: полученный тип ({jResult.Type}) не соответствует ожидаемому ({checkedType})"
-            );
-        }
-        
-        return IntoOneScriptType(jResult);
-    }
-
-    private bool CheckJsonType(JToken value, JsonDataTypeEnum checkedType)
+    protected bool CheckJsonType(JToken value, JsonDataTypeEnum checkedType)
     {
         return value.Type switch
         {
@@ -182,13 +98,40 @@ public class JsonData : AutoContext<JsonData>
             JTokenType.Float => checkedType == JsonDataTypeEnum.Number,
             JTokenType.Guid => checkedType == JsonDataTypeEnum.String,
             JTokenType.Uri => checkedType == JsonDataTypeEnum.String,
-            
+
             JTokenType.Object => checkedType == JsonDataTypeEnum.Object,
             JTokenType.Array => checkedType == JsonDataTypeEnum.Array,
         };
     }
 
-    private IValue IntoOneScriptType(JToken token, bool unwrapIfArray = false)
+    protected JToken IntoJsonType(IValue value)
+    {
+        // For plain types
+        if (_oscriptPlainDataTypes.Contains(value.DataType))
+        {
+            return JToken.FromObject(value.DataType switch
+            {
+                DataType.Boolean => value.AsBoolean(),
+                DataType.Date => value.AsDate(),
+                DataType.Number => value.AsNumber(),
+                DataType.String => value.AsString()
+            });
+        }
+
+        // For JsonData instances
+        if (value.DataType == DataType.Object)
+        {
+            var valueObject = ContextValuesMarshaller.ConvertToCLRObject(value);
+            if (valueObject is JsonData jsonDataObject)
+            {
+                return jsonDataObject._root;
+            }
+        }
+
+        throw new RuntimeException("Невозможно привести OneScript тип к Json типу");
+    }
+
+    protected IValue IntoOneScriptType(JToken token, bool unwrapIfArray = false)
     {
         try
         {
@@ -208,12 +151,6 @@ public class JsonData : AutoContext<JsonData>
 
                 JTokenType.Date =>
                     ValueFactory.Create(token.Value<DateTime>()),
-
-                JTokenType.Guid =>
-                    ValueFactory.Create(token.Value<string>()),
-
-                JTokenType.Uri =>
-                    ValueFactory.Create(token.Value<string>()),
 
                 JTokenType.Object or JTokenType.Array =>
                     ContextValuesMarshaller.ConvertDynamicValue(
