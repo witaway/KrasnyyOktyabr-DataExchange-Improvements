@@ -5,6 +5,7 @@ using System.Text;
 using KrasnyyOktyabr.Scripting.OneScript.Logic.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ScriptEngine.HostedScript.Library.Json;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
 
@@ -85,6 +86,19 @@ public partial class JsonData : AutoContext<JsonData>
 
         _root = root;
         _checkedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
+    }
+
+    [ScriptConstructor]
+    public static JsonData Constructor(string json)
+    {
+        return new JsonData(JContainer.Parse(json) as JContainer);
+    }
+
+    [ContextMethod("Сериализовать", "Serialize")]
+    public string Serialize()
+    {
+        // Todo: There's should be a into Stream implementation too 
+        return _root.ToString();
     }
 
     protected bool CheckJsonType(JToken value, JsonDataTypeEnum checkedType)

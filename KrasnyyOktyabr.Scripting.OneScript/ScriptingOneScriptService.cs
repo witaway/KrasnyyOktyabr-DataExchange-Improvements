@@ -19,12 +19,13 @@ public class ScriptingOneScriptService : IScriptingService
         throw new System.NotImplementedException();
     }
 
-    public async ValueTask RunScriptArbitraryAsync(Stream scriptStream, Stream inputStream, Stream outputStream, CancellationToken cancellationToken)
+    public async ValueTask RunScriptArbitraryAsync(Stream scriptStream, Stream inputStream, Stream outputStream,
+        CancellationToken cancellationToken)
     {
         using var scriptStreamReader = new StreamReader(scriptStream, Encoding.UTF8, true, 512, true);
         // using var inputStreamReader = new StreamReader(inputStream, Encoding.UTF8, true, 512, true);
         using var outputStreamWriter = new StreamWriter(outputStream, Encoding.UTF8, 512, true);
-        
+
         // EP 1. Configure application host and input/output capabilities.
         var host = new DefaultAppHost((message, messageStatusEnum) =>
         {
@@ -35,25 +36,20 @@ public class ScriptingOneScriptService : IScriptingService
             outputStreamWriter.FlushAsync();
             // ReSharper restore AccessToDisposedClosure
         });
-        
+
         // EP 2. Initialize scripting engine with given host
         var engine = EngineProvider.CreateEngine(host);
         engine.Initialize();
 
         // EP 3. Initialize worker
         var worker = Worker.CreateFromScriptStream(engine, scriptStream);
-        
+
         // EP 4. Run worker
         var success = worker.ProccessScript(inputStream);
-        
-        // EP 5. Check success
-        if (success)
-            await outputStreamWriter.WriteLineAsync("\nРЕЗУЛЬТАТ ВЫПОЛНЕНИЯ: УСПЕХ!");
-        else 
-            await outputStreamWriter.WriteLineAsync("\\nРЕЗУЛЬТАТ ВЫПОЛНЕНИЯ: НЕ УСПЕХ :(");
     }
 
-    public ValueTask<List<JsonTransformMsSqlResult>> RunScriptOnConsumedMessageMsSqlAsync(string instructionName, string message, string tablePropertyName,
+    public ValueTask<List<JsonTransformMsSqlResult>> RunScriptOnConsumedMessageMsSqlAsync(string instructionName,
+        string message, string tablePropertyName,
         CancellationToken cancellationToken)
     {
         throw new System.NotImplementedException();

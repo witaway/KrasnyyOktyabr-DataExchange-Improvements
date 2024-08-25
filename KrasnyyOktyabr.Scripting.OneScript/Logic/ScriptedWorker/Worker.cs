@@ -43,12 +43,13 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
                 throw new RuntimeException("Параметр Отказ не должен иметь признак Знач");
             }
 
+            var jsonData = new JsonData(inputStream, cannotBeArray: true);
+
             // Передаем в метод 2 параметра. Второй - выходной параметр "Отказ"
+            //
             // Первый параметр - входные "Данные"
             // Второй параметр - "Отказ"
-
-            var jsonData = new JsonData(inputStream);
-
+            //
             // Переменные Данные и Отказ должны быть типом "Переменная" и передаваться по ссылке, чтобы
             // в них можно было записать значение в скрипте и получить на уровне C#
             var jsonDataArg = Variable.Create(ValueFactory.Create(jsonData), "Данные");
@@ -74,7 +75,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
             // Универсальный конвертер из bsl-значения в значение C#
             // В данном случае можно не использовать, т.к. тип точно уже булево, проверен выше.
             // var marshalledBool = ContextValuesMarshaller.ConvertReturnValue(returned);
-            
+
             return returned.AsBoolean();
         }
 
