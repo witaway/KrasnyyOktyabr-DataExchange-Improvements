@@ -106,7 +106,7 @@ public class WebApiApplication : HttpApplication
         
         builder.Services.AddSingleton<IJsonService, JsonService>();
 
-        builder.Services.AddSingleton<IScriptingService, ScriptingJsonTransformService>();
+        builder.Services.AddSingleton<IScriptingService, ScriptingOneScriptService>();
         
         builder.Services.AddSingleton<IKafkaService, KafkaService>();
 

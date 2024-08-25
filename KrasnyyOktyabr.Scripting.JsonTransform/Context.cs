@@ -64,7 +64,7 @@ public sealed class Context : IContext
         {
             throw new ArgumentNullException(path);
         }
-
+        
         if (path.Contains("[:]")) // Indicates that array must to be returned
         {
             return new JArray(_input.SelectTokens(path));

@@ -76,8 +76,7 @@
         <Compile Include="Engine\IMessager.cs" />
         <Compile Include="Engine\OneScriptAdoptionContext.cs" />
         <Compile Include="Logic\Api\JsonData.cs" />
-        <Compile Include="Logic\Api\WeatherData.cs" />
-        <Compile Include="Logic\Api\WeatherProvider.cs" />
+        <Compile Include="Logic\Api\JsonDataTypeEnum.cs" />
         <Compile Include="Logic\OperationCancelledException.cs" />
         <Compile Include="Logic\ScriptedWorker\Worker.cs" />
         <Compile Include="Properties\AssemblyInfo.cs"/>

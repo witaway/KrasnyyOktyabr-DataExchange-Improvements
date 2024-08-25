@@ -24,7 +24,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
         /// <returns>Если true то обработка успешна, если false, то нет</returns>
         /// <exception cref="RuntimeException">Если произошла ошибка выполнения скрипта</exception>
         /// <exception cref="OperationCanceledException">Выбрасывает исключение, если в обработчике выставили Отказ = Истина</exception>
-        public bool ProccessWeather()
+        public bool ProccessScript(Stream inputStream)
         {
             var handlerId = GetScriptMethod("ОбработатьПорциюДанных", "ProcessDataPortion");
             if (handlerId == -1)
@@ -44,13 +44,22 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
             }
 
             // Передаем в метод 2 параметра. Второй - выходной параметр "Отказ"
-            var weatherService = new WeatherProvider();
-            
-            // Переменная Отказ должна быть типом "Переменная" и передаваться по ссылке, чтобы
-            // в нее можно было записать значение в скрипте и получить на уровне C#
+            // Первый параметр - входные "Данные"
+            // Второй параметр - "Отказ"
+
+            var jsonData = new JsonData(inputStream);
+
+            // Переменные Данные и Отказ должны быть типом "Переменная" и передаваться по ссылке, чтобы
+            // в них можно было записать значение в скрипте и получить на уровне C#
+            var jsonDataArg = Variable.Create(ValueFactory.Create(jsonData), "Данные");
             var cancelArg = Variable.Create(ValueFactory.Create(false), "Отказ");
 
-            var returned = CallScriptMethod(handlerId, new[] { weatherService });
+            var returned = CallScriptMethod(handlerId, new[]
+            {
+                jsonDataArg,
+                cancelArg
+            });
+
             if (returned.DataType != DataType.Boolean)
             {
                 throw new RuntimeException("Обработчик должен вернуть Булево");
@@ -64,8 +73,8 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
 
             // Универсальный конвертер из bsl-значения в значение C#
             // В данном случае можно не использовать, т.к. тип точно уже булево, проверен выше.
-            //var marshalledBool = ContextValuesMarshaller.ConvertReturnValue(returned);
-
+            // var marshalledBool = ContextValuesMarshaller.ConvertReturnValue(returned);
+            
             return returned.AsBoolean();
         }
 
@@ -80,7 +89,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
             var code = engine.Loader.FromFile(scriptFileName);
             return Create(engine, code);
         }
-        
+
         /// <summary>
         /// Создать из строки текста
         /// </summary>
@@ -92,14 +101,14 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
             var code = engine.Loader.FromString(scriptContent);
             return Create(engine, code);
         }
-        
+
         /// <summary>
         /// Создать из текстового потока
         /// </summary>
         /// <param name="engine"></param>
         /// <param name="scriptFileName"></param>
         /// <returns></returns>
-        public static Worker CreateFromStream(ScriptingEngine engine, Stream stream)
+        public static Worker CreateFromScriptStream(ScriptingEngine engine, Stream stream)
         {
             using var streamReader = new StreamReader(stream, Encoding.UTF8, true, 4096, true);
             var scriptContent = streamReader.ReadToEnd();
@@ -121,7 +130,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
             //compiler.DefineMethod();
             //compiler.DefineVariable();
             //compiler.DefinePreprocessorValue();
-            
+
             var module = CompileModule(compiler, code);
             var loadedModule = engine.LoadModuleImage(module);
 

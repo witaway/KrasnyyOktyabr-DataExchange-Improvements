@@ -22,7 +22,7 @@ public class ScriptingOneScriptService : IScriptingService
     public async ValueTask RunScriptArbitraryAsync(Stream scriptStream, Stream inputStream, Stream outputStream, CancellationToken cancellationToken)
     {
         using var scriptStreamReader = new StreamReader(scriptStream, Encoding.UTF8, true, 512, true);
-        using var inputStreamReader = new StreamReader(inputStream, Encoding.UTF8, true, 512, true);
+        // using var inputStreamReader = new StreamReader(inputStream, Encoding.UTF8, true, 512, true);
         using var outputStreamWriter = new StreamWriter(outputStream, Encoding.UTF8, 512, true);
         
         // EP 1. Configure application host and input/output capabilities.
@@ -41,10 +41,10 @@ public class ScriptingOneScriptService : IScriptingService
         engine.Initialize();
 
         // EP 3. Initialize worker
-        var worker = Worker.CreateFromStream(engine, scriptStream);
+        var worker = Worker.CreateFromScriptStream(engine, scriptStream);
         
         // EP 4. Run worker
-        var success = worker.ProccessWeather();
+        var success = worker.ProccessScript(inputStream);
         
         // EP 5. Check success
         if (success)
