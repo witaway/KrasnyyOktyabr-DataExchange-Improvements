@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ScriptEngine.HostedScript.Library;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
 
@@ -12,7 +13,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.Api;
 [ContextClass("Данные", "Data")]
 public partial class JsonData : AutoContext<JsonData>
 {
-    private readonly List<DataType> _oscriptPlainDataTypes =
+    private static readonly List<DataType> _oscriptPlainDataTypes =
     [
         DataType.Boolean,
         DataType.Date,
@@ -151,7 +152,7 @@ public partial class JsonData : AutoContext<JsonData>
         };
     }
 
-    protected JToken IntoJsonType(IValue value)
+    protected static JToken IntoJsonType(IValue value)
     {
         // For plain types
         if (_oscriptPlainDataTypes.Contains(value.DataType))
@@ -166,19 +167,15 @@ public partial class JsonData : AutoContext<JsonData>
         }
 
         // For JsonData instances
-        if (value.DataType == DataType.Object)
+        if (value.DataType == DataType.Object && value is JsonData jsonData)
         {
-            var valueObject = ContextValuesMarshaller.ConvertToCLRObject(value);
-            if (valueObject is JsonData jsonDataObject)
-            {
-                return jsonDataObject.Root;
-            }
+            return jsonData.Root;
         }
 
         throw new RuntimeException("Невозможно привести OneScript тип к Json типу");
     }
 
-    protected IValue IntoOneScriptType(JToken token, bool unwrapIfArray = false)
+    protected static IValue IntoOneScriptType(JToken token, bool unwrapIfArray = false)
     {
         try
         {

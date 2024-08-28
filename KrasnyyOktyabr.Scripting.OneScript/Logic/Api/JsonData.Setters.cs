@@ -64,7 +64,7 @@ public partial class JsonData
         if (Root is not JObject rootObject)
         {
             throw new RuntimeException(
-                "Невозможно установить JSON-значение по индексу: сущность не является массивом"
+                "Невозможно установить JSON-значение по пути: сущность не является объектом"
             );
         }
 
@@ -98,7 +98,7 @@ public partial class JsonData
             );
         }
 
-        rootArray.ExtendLength(index);
+        rootArray.ExtendLength(index + 1);
         rootArray[index] = jValue;
     }
 }

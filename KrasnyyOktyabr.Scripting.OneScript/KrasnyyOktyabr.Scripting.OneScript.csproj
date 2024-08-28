@@ -78,6 +78,7 @@
         <Compile Include="Logic\Api\DataResolver.cs" />
         <Compile Include="Logic\Api\HelpersLegacy.cs" />
         <Compile Include="Logic\Api\JsonData.Common.cs" />
+        <Compile Include="Logic\Api\JsonData.ForEachAdapters.cs" />
         <Compile Include="Logic\Api\JsonData.Getters.cs" />
         <Compile Include="Logic\Api\JsonData.Setters.cs" />
         <Compile Include="Logic\Api\JsonDataTypeEnum.cs" />
