@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using KrasnyyOktyabr.JsonTransform.Numerics;
 using KrasnyyOktyabr.JsonTransform.Structures;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
@@ -7,7 +8,7 @@ using ScriptEngine.Machine.Contexts;
 namespace KrasnyyOktyabr.Scripting.OneScript.Logic.Api;
 
 [ContextClass("ТаблицаЗначенийЛегаси", "ValueTableLegacy")]
-public class ValueTableLegacy
+public class ValueTableLegacy : AutoContext<ValueTableLegacy>
 {
     private ValueTable _valueTable;
 
@@ -59,7 +60,7 @@ public class ValueTableLegacy
         }
     }
 
-    [ContextMethod("Количество", "Count")]
+    [ContextMethod("КоличествоСтрок", "RowsCount")]
     public int Count()
     {
         return _valueTable.Count;
@@ -68,15 +69,24 @@ public class ValueTableLegacy
     [ContextMethod("ПолучитьЗначение", "GetValue")]
     public IValue GetValue(string columnName)
     {
-        var value = _valueTable.GetValue(columnName);
-        return ContextValuesMarshaller.ConvertDynamicValue(value);
+        return _valueTable.GetValue(columnName) switch
+        {
+            Number numberValue => ValueFactory.Create((numberValue.Long ?? numberValue.Decimal)!.Value),
+            string stringValue => ValueFactory.Create(stringValue),
+            IValue objectValue => objectValue,
+            _ => throw new RuntimeException("ValueTableLegacy не может получить значение поскольку хранимый тип не правилен.")
+        };
     }
 
     [ContextMethod("УстановитьЗначение", "SetValue")]
     public void SetValue(string columnName, IValue value)
     {
-        var valueClr = ContextValuesMarshaller.ConvertToCLRObject(value);
-        _valueTable.SetValue(columnName, valueClr);
+        _valueTable.SetValue(columnName, value.DataType switch
+        {
+            DataType.Number => new Number(value.AsNumber()),
+            DataType.String => value.AsString(),
+            _ => value
+        });
     }
 
     [ContextMethod("ВыбратьСтроку", "SelectLine")]
