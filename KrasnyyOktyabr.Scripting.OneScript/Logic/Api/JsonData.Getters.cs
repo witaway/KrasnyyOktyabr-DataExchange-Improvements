@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
 
@@ -8,35 +9,59 @@ public partial class JsonData
 {
     public override IValue GetIndexedValue(IValue index)
     {
-        switch (index.DataType)
+        // If index is string or number,
+        // perform search of corresponding children here
+        // But if children was a json array or object,
+        // In this case inherit (ONLY!) get and set flags here from parent
+        if (index.DataType is DataType.String or DataType.Number)
         {
-            case DataType.String:
+            var result = index.DataType switch
             {
-                return GetSingleValueByPath(
+                DataType.String => GetSingleValueByPath(
                     index.AsString(),
                     CheckedTypeForIndexOperatorAccess
-                );
-            }
-            case DataType.Number:
-            {
-                return GetSingleValueByIndex(
+                ),
+                DataType.Number => GetSingleValueByIndex(
                     (int)index.AsNumber(),
                     CheckedTypeForIndexOperatorAccess
-                );
-            }
-            case DataType.Enumeration:
+                )
+            };
+            if (result is JsonData jsonDataResult)
             {
-                return new JsonData(
-                    Root,
-                    false,
-                    ContextValuesMarshaller.CastToCLRObject<JsonDataTypeEnum>(index)
-                );
+                jsonDataResult.GetNothingFoundBehaviour = GetNothingFoundBehaviour;
+                jsonDataResult.SetAlreadyExistsBehaviour = SetAlreadyExistsBehaviour;
             }
-            default:
+
+            return result;
+        }
+
+        // In case index is one of flags,
+        // just return the copy of JsonData, but change the corresponding flag in it.
+        if (index.DataType is DataType.Enumeration)
+        {
+            var newJsonData = new JsonData(this);
+            object unknownEnum = ContextValuesMarshaller.CastToCLRObject(index);
+
+            if (unknownEnum is JsonDataTypeEnum jsonDataTypeEnum)
             {
-                return base.GetIndexedValue(index);
+                newJsonData.CheckedTypeForIndexOperatorAccess = jsonDataTypeEnum;
+                return newJsonData;
+            }
+
+            if (unknownEnum is JsonDataGetFlagsEnum jsonDataGetFlagsEnum)
+            {
+                newJsonData.GetNothingFoundBehaviour = jsonDataGetFlagsEnum;
+                return newJsonData;
+            }
+
+            if (unknownEnum is JsonDataSetFlagsEnum jsonDataSetFlagsEnum)
+            {
+                newJsonData.SetAlreadyExistsBehaviour = jsonDataSetFlagsEnum;
+                return newJsonData;
             }
         }
+
+        return base.GetIndexedValue(index);
     }
 
     [ContextMethod("Получить", "Get")]
@@ -65,9 +90,14 @@ public partial class JsonData
 
         if (jResult is null)
         {
-            throw new RuntimeException(
-                "Невозможно получить JSON-значение: данному пути не соответствует ни один токен"
-            );
+            return GetNothingFoundBehaviour switch
+            {
+                JsonDataGetFlagsEnum.ReturnNull => ValueFactory.CreateNullValue(),
+                JsonDataGetFlagsEnum.Error => throw new RuntimeException(
+                    "Невозможно получить JSON-значение: данному пути не соответствует ни один токен"
+                ),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         if (checkedType is not null && !CheckJsonType(jResult, checkedType.Value))
@@ -89,14 +119,19 @@ public partial class JsonData
             );
         }
 
-        var jResult = rootArray[index];
-
-        if (jResult is null)
+        if (index >= rootArray.Count)
         {
-            throw new RuntimeException(
-                "Невозможно получить JSON-значение: данному пути не соответствует ни один токен"
-            );
+            return GetNothingFoundBehaviour switch
+            {
+                JsonDataGetFlagsEnum.ReturnNull => ValueFactory.CreateNullValue(),
+                JsonDataGetFlagsEnum.Error => throw new RuntimeException(
+                    "Невозможно получить JSON-значение: индекс превышает размер массива"
+                ),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
+        
+        var jResult = rootArray[index];
 
         if (checkedType is not null && !CheckJsonType(jResult, checkedType.Value))
         {

@@ -24,6 +24,8 @@ public partial class JsonData : AutoContext<JsonData>
     public JContainer Root { get; }
 
     public JsonDataTypeEnum? CheckedTypeForIndexOperatorAccess = null;
+    public JsonDataGetFlagsEnum GetNothingFoundBehaviour = JsonDataGetFlagsEnum.Error;
+    public JsonDataSetFlagsEnum SetAlreadyExistsBehaviour = JsonDataSetFlagsEnum.Error;
 
     public JsonData(
         Stream inputStream,
@@ -36,10 +38,10 @@ public partial class JsonData : AutoContext<JsonData>
             Encoding.UTF8,
             true, 1024, true
         );
-        
+
         using var reader = new JsonTextReader(inputStreamReader);
         reader.FloatParseHandling = FloatParseHandling.Decimal;
-        
+
         var loadSettings = new JsonLoadSettings();
 
         try
@@ -71,7 +73,7 @@ public partial class JsonData : AutoContext<JsonData>
 
         CheckedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
     }
-    
+
     public JsonData(
         string input,
         bool cannotBeArray = false,
@@ -107,19 +109,17 @@ public partial class JsonData : AutoContext<JsonData>
         CheckedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
     }
 
-    public JsonData(
-        JContainer root,
-        bool cannotBeArray = false,
-        JsonDataTypeEnum? checkedTypeForIndexOperatorAccess = null
-    )
+    public JsonData(JContainer root)
     {
-        if (root.Type == JTokenType.Array && cannotBeArray)
-        {
-            throw new RuntimeException("Невозможно создать Данные. Переданный объект не может быть массивом");
-        }
-
         Root = root;
-        CheckedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
+    }
+
+    public JsonData(JsonData oldJsonData)
+    {
+        Root = oldJsonData.Root;
+        GetNothingFoundBehaviour = oldJsonData.GetNothingFoundBehaviour;
+        SetAlreadyExistsBehaviour = oldJsonData.SetAlreadyExistsBehaviour;
+        CheckedTypeForIndexOperatorAccess = oldJsonData.CheckedTypeForIndexOperatorAccess;
     }
 
     [ScriptConstructor]
@@ -162,7 +162,8 @@ public partial class JsonData : AutoContext<JsonData>
                 DataType.Boolean => value.AsBoolean(),
                 DataType.Date => value.AsDate(),
                 DataType.Number => value.AsNumber(),
-                DataType.String => value.AsString()
+                DataType.String => value.AsString(),
+                DataType.NotAValidValue => JValue.CreateNull(),
             });
         }
 
@@ -195,6 +196,9 @@ public partial class JsonData : AutoContext<JsonData>
 
                 JTokenType.Date =>
                     ValueFactory.Create(token.Value<DateTime>()),
+
+                JTokenType.Null =>
+                    ValueFactory.CreateNullValue(),
 
                 JTokenType.Object or JTokenType.Array =>
                     ContextValuesMarshaller.ConvertDynamicValue(

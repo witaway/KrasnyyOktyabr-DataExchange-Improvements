@@ -81,6 +81,8 @@
         <Compile Include="Logic\Api\JsonData.ForEachAdapters.cs" />
         <Compile Include="Logic\Api\JsonData.Getters.cs" />
         <Compile Include="Logic\Api\JsonData.Setters.cs" />
+        <Compile Include="Logic\Api\JsonDataGetFlagsEnum.cs" />
+        <Compile Include="Logic\Api\JsonDataSetFlagsEnum.cs" />
         <Compile Include="Logic\Api\JsonDataTypeEnum.cs" />
         <Compile Include="Logic\Api\ValueTableLegacy.cs" />
         <Compile Include="Logic\Helpers\JArrayExtendLengthExtension.cs" />

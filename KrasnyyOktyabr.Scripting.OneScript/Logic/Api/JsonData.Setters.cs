@@ -1,4 +1,5 @@
-﻿using KrasnyyOktyabr.Scripting.OneScript.Logic.Helpers;
+﻿using System;
+using KrasnyyOktyabr.Scripting.OneScript.Logic.Helpers;
 using Newtonsoft.Json.Linq;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
@@ -77,6 +78,24 @@ public partial class JsonData
             );
         }
 
+        var alreadyExistingToken = rootObject.SelectToken(path);
+
+        if (alreadyExistingToken != null)
+        {
+            switch (SetAlreadyExistsBehaviour)
+            {
+                case JsonDataSetFlagsEnum.Replace:
+                    alreadyExistingToken.Replace(jValue);
+                    return;
+                case JsonDataSetFlagsEnum.Error:
+                    throw new RuntimeException(
+                        "Невозможно установить JSON-значение: данному ключу уже соответствует некоторый токен"
+                    );
+                case JsonDataSetFlagsEnum.Skip:
+                    return;
+            }
+        }
+
         rootObject.Add(path, jValue);
     }
 
@@ -98,6 +117,22 @@ public partial class JsonData
             );
         }
 
+        if (index < rootArray.Count)
+        {
+            switch (SetAlreadyExistsBehaviour)
+            {
+                case JsonDataSetFlagsEnum.Replace:
+                    rootArray[index].Replace(jValue);
+                    return;
+                case JsonDataSetFlagsEnum.Error:
+                    throw new RuntimeException(
+                        "Невозможно установить JSON-значение: данному индексу уже соответствует некоторый токен"
+                    );
+                case JsonDataSetFlagsEnum.Skip:
+                    return;
+            }
+        }
+        
         rootArray.ExtendLength(index + 1);
         rootArray[index] = jValue;
     }
