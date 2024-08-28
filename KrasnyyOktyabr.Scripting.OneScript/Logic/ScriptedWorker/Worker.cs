@@ -71,9 +71,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
             }
             
             // Проверяем возвращённое значение
-            var returnedClr = ContextValuesMarshaller.CastToCLRObject(returned);
-            
-            if (returnedClr is not JsonData returnedJsonData)
+            if (returned is not JsonData returnedJsonData)
             {
                 throw new RuntimeException("Обработчик должен вернуть объект JsonData");
             }
