@@ -12,7 +12,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.Api;
 [ContextClass("Данные", "Data")]
 public partial class JsonData : AutoContext<JsonData>
 {
-    protected readonly List<DataType> _oscriptPlainDataTypes =
+    private readonly List<DataType> _oscriptPlainDataTypes =
     [
         DataType.Boolean,
         DataType.Date,
@@ -20,9 +20,9 @@ public partial class JsonData : AutoContext<JsonData>
         DataType.String
     ];
 
-    protected JContainer _root { get; set; }
+    public JContainer Root { get; }
 
-    protected JsonDataTypeEnum? _checkedTypeForIndexOperatorAccess = null;
+    public JsonDataTypeEnum? CheckedTypeForIndexOperatorAccess = null;
 
     public JsonData(
         Stream inputStream,
@@ -35,10 +35,10 @@ public partial class JsonData : AutoContext<JsonData>
             Encoding.UTF8,
             true, 1024, true
         );
-
+        
         using var reader = new JsonTextReader(inputStreamReader);
         reader.FloatParseHandling = FloatParseHandling.Decimal;
-
+        
         var loadSettings = new JsonLoadSettings();
 
         try
@@ -47,7 +47,7 @@ public partial class JsonData : AutoContext<JsonData>
             if (inputJson is null) throw new JsonReaderException();
             if (cannotBeArray && inputJson is JArray) throw new JsonReaderException();
 
-            _root = inputJson;
+            Root = inputJson;
         }
         catch (JsonReaderException ex)
         {
@@ -68,7 +68,42 @@ public partial class JsonData : AutoContext<JsonData>
             );
         }
 
-        _checkedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
+        CheckedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
+    }
+    
+    public JsonData(
+        string input,
+        bool cannotBeArray = false,
+        JsonDataTypeEnum? checkedTypeForIndexOperatorAccess = null
+    )
+    {
+        try
+        {
+            if (JToken.Parse(input) is not JContainer inputJson) throw new JsonReaderException();
+            if (cannotBeArray && inputJson is JArray) throw new JsonReaderException();
+
+            Root = inputJson;
+        }
+        catch (JsonReaderException ex)
+        {
+            throw new RuntimeException(
+                "Невозможно создать Данные. Переданный объект содержит синтаксические ошибки?", ex
+            );
+        }
+        catch (CannotCastToJContainerException ex)
+        {
+            throw new RuntimeException(
+                "Невозможно создать Данные. Переданный объект не является JContainer?", ex
+            );
+        }
+        catch (CannotBeArrayException ex)
+        {
+            throw new RuntimeException(
+                "Невозможно создать Данные. Переданный объект не может быть массивом", ex
+            );
+        }
+
+        CheckedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
     }
 
     public JsonData(
@@ -82,8 +117,8 @@ public partial class JsonData : AutoContext<JsonData>
             throw new RuntimeException("Невозможно создать Данные. Переданный объект не может быть массивом");
         }
 
-        _root = root;
-        _checkedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
+        Root = root;
+        CheckedTypeForIndexOperatorAccess = checkedTypeForIndexOperatorAccess;
     }
 
     [ScriptConstructor]
@@ -96,7 +131,7 @@ public partial class JsonData : AutoContext<JsonData>
     public string Serialize()
     {
         // Todo: There's should be a into Stream implementation too 
-        return _root.ToString();
+        return Root.ToString();
     }
 
     protected bool CheckJsonType(JToken value, JsonDataTypeEnum checkedType)
@@ -136,7 +171,7 @@ public partial class JsonData : AutoContext<JsonData>
             var valueObject = ContextValuesMarshaller.ConvertToCLRObject(value);
             if (valueObject is JsonData jsonDataObject)
             {
-                return jsonDataObject._root;
+                return jsonDataObject.Root;
             }
         }
 

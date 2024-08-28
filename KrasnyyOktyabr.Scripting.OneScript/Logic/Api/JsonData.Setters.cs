@@ -16,7 +16,7 @@ public partial class JsonData
                 SetSingleValueByPath(
                     index.AsString(),
                     value,
-                    _checkedTypeForIndexOperatorAccess
+                    CheckedTypeForIndexOperatorAccess
                 );
                 break;
             }
@@ -25,7 +25,7 @@ public partial class JsonData
                 SetSingleValueByIndex(
                     (int)index.AsNumber(),
                     value,
-                    _checkedTypeForIndexOperatorAccess
+                    CheckedTypeForIndexOperatorAccess
                 );
                 break;
             }
@@ -61,7 +61,7 @@ public partial class JsonData
 
     protected void SetSingleValueByPath(string path, IValue value, JsonDataTypeEnum? checkedType = null)
     {
-        if (_root is not JObject rootObject)
+        if (Root is not JObject rootObject)
         {
             throw new RuntimeException(
                 "Невозможно установить JSON-значение по индексу: сущность не является массивом"
@@ -82,7 +82,7 @@ public partial class JsonData
 
     protected void SetSingleValueByIndex(int index, IValue value, JsonDataTypeEnum? checkedType = null)
     {
-        if (_root is not JArray rootArray)
+        if (Root is not JArray rootArray)
         {
             throw new RuntimeException(
                 "Невозможно установить JSON-значение по индексу: сущность не является массивом"

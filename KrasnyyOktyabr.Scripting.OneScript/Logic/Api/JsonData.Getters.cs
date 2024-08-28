@@ -14,20 +14,20 @@ public partial class JsonData
             {
                 return GetSingleValueByPath(
                     index.AsString(),
-                    _checkedTypeForIndexOperatorAccess
+                    CheckedTypeForIndexOperatorAccess
                 );
             }
             case DataType.Number:
             {
                 return GetSingleValueByIndex(
                     (int)index.AsNumber(),
-                    _checkedTypeForIndexOperatorAccess
+                    CheckedTypeForIndexOperatorAccess
                 );
             }
             case DataType.Enumeration:
             {
                 return new JsonData(
-                    _root,
+                    Root,
                     false,
                     ContextValuesMarshaller.CastToCLRObject<JsonDataTypeEnum>(index)
                 );
@@ -61,7 +61,7 @@ public partial class JsonData
 
     protected IValue GetSingleValueByPath(string path, JsonDataTypeEnum? checkedType = null)
     {
-        var jResult = _root.SelectToken(path);
+        var jResult = Root.SelectToken(path);
 
         if (jResult is null)
         {
@@ -82,7 +82,7 @@ public partial class JsonData
 
     protected IValue GetSingleValueByIndex(int index, JsonDataTypeEnum? checkedType = null)
     {
-        if (_root is not JArray rootArray)
+        if (Root is not JArray rootArray)
         {
             throw new RuntimeException(
                 "Невозможно получить JSON-значение по индексу: сущность не является массивом"

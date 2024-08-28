@@ -12,6 +12,9 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
     [ContextClass("Обработчик", "Worker")]
     public class Worker : AutoScriptDrivenObject<Worker>
     {
+        public static string ConsumerInstructionsPath =>
+            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Properties", "ConsumerInstructions");
+        
         private Worker(LoadedModule module) : base(module)
         {
         }
@@ -24,7 +27,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
         /// <returns>Если true то обработка успешна, если false, то нет</returns>
         /// <exception cref="RuntimeException">Если произошла ошибка выполнения скрипта</exception>
         /// <exception cref="OperationCanceledException">Выбрасывает исключение, если в обработчике выставили Отказ = Истина</exception>
-        public bool ProccessScript(Stream inputStream)
+        public JsonData ProccessScript(JsonData inputJsonData)
         {
             var handlerId = GetScriptMethod("ОбработатьПорциюДанных", "ProcessDataPortion");
             if (handlerId == -1)
@@ -42,9 +45,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
             {
                 throw new RuntimeException("Параметр Отказ не должен иметь признак Знач");
             }
-
-            var jsonData = new JsonData(inputStream, cannotBeArray: true);
-
+            
             // Передаем в метод 2 параметра. Второй - выходной параметр "Отказ"
             //
             // Первый параметр - входные "Данные"
@@ -52,8 +53,8 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
             //
             // Переменные Данные и Отказ должны быть типом "Переменная" и передаваться по ссылке, чтобы
             // в них можно было записать значение в скрипте и получить на уровне C#
-            var jsonDataArg = Variable.Create(ValueFactory.Create(jsonData), "Данные");
-            var cancelArg = Variable.Create(ValueFactory.Create(false), "Отказ");
+            var jsonDataArg = Variable.Create(ValueFactory.Create(inputJsonData), "Данные");
+            var cancelArg = Variable.Create(ValueFactory.Create(""), "Отказ");
 
             var returned = CallScriptMethod(handlerId, new[]
             {
@@ -61,22 +62,23 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
                 cancelArg
             });
 
-            if (returned.DataType != DataType.Boolean)
+            // Проверка на Отказ. Если в переменной непустая строка - ее установили в скрипте через Отказ = "Причина отказа"
+            var cancelArgStr = cancelArg.Value.ToString();
+                
+            if (cancelArgStr.Length > 0)
             {
-                throw new RuntimeException("Обработчик должен вернуть Булево");
+                throw new OperationCanceledException(cancelArgStr);
+            }
+            
+            // Проверяем возвращённое значение
+            var returnedClr = ContextValuesMarshaller.CastToCLRObject(returned);
+            
+            if (returnedClr is not JsonData returnedJsonData)
+            {
+                throw new RuntimeException("Обработчик должен вернуть объект JsonData");
             }
 
-            // Проверка на Отказ. Если в переменной Истина - ее установили в скрипте через Отказ = Истина
-            if (cancelArg.Value.AsBoolean())
-            {
-                throw new OperationCanceledException();
-            }
-
-            // Универсальный конвертер из bsl-значения в значение C#
-            // В данном случае можно не использовать, т.к. тип точно уже булево, проверен выше.
-            // var marshalledBool = ContextValuesMarshaller.ConvertReturnValue(returned);
-
-            return returned.AsBoolean();
+            return returnedJsonData;
         }
 
         /// <summary>
@@ -87,7 +89,8 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker
         /// <returns></returns>
         public static Worker CreateFromFile(ScriptingEngine engine, string scriptFileName)
         {
-            var code = engine.Loader.FromFile(scriptFileName);
+            string scriptFilePath = Path.Combine(ConsumerInstructionsPath, scriptFileName);
+            var code = engine.Loader.FromFile(scriptFilePath);
             return Create(engine, code);
         }
 
