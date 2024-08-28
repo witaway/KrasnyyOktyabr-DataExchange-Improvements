@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using KrasnyyOktyabr.DataResolve;
 using KrasnyyOktyabr.Scripting.Core;
 using KrasnyyOktyabr.Scripting.Core.Models;
 using KrasnyyOktyabr.Scripting.OneScript.Engine;
 using KrasnyyOktyabr.Scripting.OneScript.Logic.ScriptedWorker;
-using ScriptEngine.HostedScript.Library;
 
 namespace KrasnyyOktyabr.Scripting.OneScript;
 
-public class ScriptingOneScriptService : IScriptingService
+public class ScriptingOneScriptService(
+    IDataResolveService dataResolveService
+) : IScriptingService
 {
     public int ClearCachedExpressions()
     {
@@ -38,7 +39,7 @@ public class ScriptingOneScriptService : IScriptingService
         });
 
         // EP 2. Initialize scripting engine with given host
-        var engine = EngineProvider.CreateEngine(host);
+        var engine = EngineProvider.CreateEngine(host, dataResolveService);
         engine.Initialize();
 
         // EP 3. Initialize worker

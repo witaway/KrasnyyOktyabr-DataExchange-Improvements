@@ -5,6 +5,8 @@ was not distributed with this file, You can obtain one
 at http://mozilla.org/MPL/2.0/.
 ----------------------------------------------------------*/
 
+using KrasnyyOktyabr.DataResolve;
+using KrasnyyOktyabr.Scripting.OneScript.Logic.Api;
 using OneScript.DebugServices;
 using ScriptEngine;
 using ScriptEngine.HostedScript;
@@ -17,7 +19,7 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Engine
     /// </summary>
     public static class EngineProvider
     {
-        public static ScriptingEngine CreateEngine(IHostApplication hostApplication)
+        public static ScriptingEngine CreateEngine(IHostApplication hostApplication, IDataResolveService dataResolveService)
         {
             var engine = new ScriptingEngine();
             engine.Environment = new RuntimeEnvironment();
@@ -25,13 +27,15 @@ namespace KrasnyyOktyabr.Scripting.OneScript.Engine
             engine.AttachAssembly(typeof(ArrayImpl).Assembly, engine.Environment);
 
             var symbols = new SymbolsContext();
-        
+            
             engine.Environment.InjectGlobalProperty(symbols, "Символы", true);
             engine.Environment.InjectGlobalProperty(symbols, "Symbols", true);
 
             var globalCtx = new OneScriptAdoptionContext(engine, hostApplication);
-        
+            var resolversFactoryCtx = new DataResolversFactoryContext(dataResolveService);
+            
             engine.Environment.InjectObject(globalCtx, false);
+            engine.Environment.InjectObject(resolversFactoryCtx, false);
             engine.AttachAssembly(typeof(EngineProvider).Assembly, engine.Environment);
             
             Locale.SystemLanguageISOName = System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName;

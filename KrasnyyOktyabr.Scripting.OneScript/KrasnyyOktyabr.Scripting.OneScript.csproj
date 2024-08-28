@@ -75,6 +75,8 @@
         <Compile Include="Engine\EngineProvider.cs" />
         <Compile Include="Engine\IMessager.cs" />
         <Compile Include="Engine\OneScriptAdoptionContext.cs" />
+        <Compile Include="Logic\Api\DataResolver.cs" />
+        <Compile Include="Logic\Api\HelpersLegacy.cs" />
         <Compile Include="Logic\Api\JsonData.Common.cs" />
         <Compile Include="Logic\Api\JsonData.Getters.cs" />
         <Compile Include="Logic\Api\JsonData.Setters.cs" />
@@ -87,6 +89,10 @@
         <Compile Include="ScriptingOneScriptService.cs" />
     </ItemGroup>
     <ItemGroup>
+      <ProjectReference Include="..\KrasnyyOktyabr.DataResolve\KrasnyyOktyabr.DataResolve.csproj">
+        <Project>{a6757dfb-77db-49cf-9c79-0f5382669556}</Project>
+        <Name>KrasnyyOktyabr.DataResolve</Name>
+      </ProjectReference>
       <ProjectReference Include="..\KrasnyyOktyabr.Scripting.Core\KrasnyyOktyabr.Scripting.Core.csproj">
         <Project>{3f4ff9c8-c219-43fe-aec7-ac5b1d5a1d86}</Project>
         <Name>KrasnyyOktyabr.Scripting.Core</Name>

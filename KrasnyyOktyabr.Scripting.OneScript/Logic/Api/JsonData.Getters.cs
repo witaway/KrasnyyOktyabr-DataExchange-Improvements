@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using KrasnyyOktyabr.Scripting.OneScript.Logic.Helpers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
 
