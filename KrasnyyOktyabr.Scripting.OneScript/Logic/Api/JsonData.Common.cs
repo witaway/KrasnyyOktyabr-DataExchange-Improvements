@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using ScriptEngine.HostedScript.Library;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
+using ScriptEngine.Machine.Values;
 
 namespace KrasnyyOktyabr.Scripting.OneScript.Logic.Api;
 
@@ -163,10 +164,15 @@ public partial class JsonData : AutoContext<JsonData>
                 DataType.Date => value.AsDate(),
                 DataType.Number => value.AsNumber(),
                 DataType.String => value.AsString(),
-                DataType.NotAValidValue => JValue.CreateNull(),
             });
         }
 
+        // For null type
+        if (ReferenceEquals(value, NullValue.Instance))
+        {
+            return JValue.CreateNull();
+        }
+        
         // For JsonData instances
         if (value.DataType == DataType.Object && value is JsonData jsonData)
         {
