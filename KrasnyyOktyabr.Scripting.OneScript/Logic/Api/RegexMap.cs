@@ -8,7 +8,7 @@ using ScriptEngine.Machine.Contexts;
 
 namespace KrasnyyOktyabr.Scripting.OneScript.Logic.Api;
 
-[ContextClass("РегулярноеСоответствие", "RegexMap")]
+    [ContextClass("РегулярноеСоответствие", "RegexMap")]
 public class RegexMap : AutoContext<RegexMap>, ICollectionContext, IEnumerable, IEnumerable<KeyAndValueImpl>
 {
     private Dictionary<string, string> _dictionary = new();

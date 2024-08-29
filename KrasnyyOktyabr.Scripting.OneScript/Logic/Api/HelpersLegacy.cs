@@ -28,7 +28,7 @@ public class HelpersLegacy : GlobalContextBase<HelpersLegacy>
         return string.Format(template, clrArgs);
     }
 
-    [ContextMethod("РегВыражЛегаси", "RegexLegacy")]
+    [ContextMethod("РегВыражБыстрыйПоиск", "RegexLegacy")]
     public string RegexLegacy(string regexString, string input, int groupNumber = 1)
     {
         Regex regex = new(regexString);

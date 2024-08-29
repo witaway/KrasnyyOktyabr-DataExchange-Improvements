@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using KrasnyyOktyabr.DataResolve;
 using ScriptEngine.Machine;
 using ScriptEngine.Machine.Contexts;
@@ -39,10 +40,15 @@ public class DataResolver : AutoContext<DataResolver>
         {
             throw new RuntimeException("Ключом ПолучателяДанных должны быть только строки!");
         }
-        
-        var valueClr = ContextValuesMarshaller.CastToCLRObject(value);
-        
-        _arguments.Add(indexStr, valueClr);
+
+        try
+        {
+            _arguments.Add(indexStr, ContextValuesMarshaller.ConvertToCLRObject(value));
+        }
+        catch (Exception ex)
+        {
+            _arguments.Add(indexStr, value);
+        }
     }
 
     public override IValue GetIndexedValue(IValue index)
